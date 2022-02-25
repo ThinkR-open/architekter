@@ -1,0 +1,19 @@
+# Define a direct explicite title
+# exemple: Create my_fun to build xml 
+
+Why:
+
+*
+
+This change addresses the need by:
+
+*
+# 50-character subject line 
+# 72-character wrapped longer description.
+
+Issues
+# List corresponding issues 
+# example :Issue #12
+
+# External ticket numbering like JIRA
+# Add JIRA ticket number like JIRA1234
