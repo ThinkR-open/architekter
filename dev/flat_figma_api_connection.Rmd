@@ -1,0 +1,121 @@
+---
+title: "Figma API connection and file extraction"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r development, include=FALSE}
+library(testthat)
+library(purrr)
+library(httr)
+library(glue)
+library(stringr)
+pkgload::load_all()
+```
+
+<!--
+ You need to run the 'description' chunk in the '0-dev_history.Rmd' file before continuing your code there.
+-->
+
+# Connection to Figma API and extraction of the content of a file: `get_file_content()` function
+
+## Connection to Figma API
+
+- Create a personal access token on your Figma account (https://www.figma.com/developers/api Section Access tokens)
+- Save this token in .Renviron `usethis::edit_r_environ()`, call the variable `FIGMA_TOKEN`
+- Restart R session `rstudioapi::restartSession()`
+- Check if the personal access token is registered `Sys.getenv("FIGMA_TOKEN")` 
+
+## Extraction of the content of a file
+
+- Find the key of your Figma file. It corresponds to the character **wRqIvMmymzSPuj0sEhnORb** in the url "https://www.figma.com/file/**wRqIvMmymzSPuj0sEhnORb**/..." (example).
+
+```{r function-get_file_content}
+#' Connect to Figma API and extract content of a file.
+#'
+#' @param file_key Character. Key of the Figma file. 
+#' @param acess_token Character. Figma access token.
+#'
+#' @importFrom httr VERB add_headers content
+#' @importFrom stringr str_remove_all
+#' @importFrom glue glue
+#' @importFrom cli cli_alert_danger cli_alert_success
+#'
+#' @details
+#' The key of your Figma file corresponds to the character 
+#' wRqIvMmymzSPuj0sEhnORb in the url 
+#' "https://www.figma.com/file/wRqIvMmymzSPuj0sEhnORb/..." (example).
+#' The acess token can be created in your Figma account 
+#' (https://www.figma.com/developers/api Section Access tokens)
+#'
+#' @return A list. Content or the file.
+#' @export
+get_file_content <- function(file_key, acess_token = Sys.getenv("FIGMA_TOKEN")) {
+  
+  api_response <- VERB(verb = "GET", 
+                       url = glue("https://api.figma.com/v1/files/{file_key}"), 
+                       add_headers(`X-FIGMA-TOKEN` = acess_token), 
+                       encode = "json")
+  
+  if (api_response$status_code == "404") {
+    
+    cli_alert_danger("Content of the file has not been extracted. Please check the file key or your access token.")
+    stop()
+    
+  } else {
+    
+    file_content <- content(api_response)
+    
+    file_name <- file_content$name %>% 
+      str_remove_all("[:punct:]")
+    
+    cli_alert_success(glue("Content of the file {file_name} has been successfully extracted."))
+    
+    return(file_content)
+    
+  }
+  
+}
+```
+
+```{r examples-get_file_content}
+file_content <- get_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
+                                 acess_token = Sys.getenv("FIGMA_TOKEN"))
+```
+
+```{r tests-get_file_content}
+test_that("get_file_content() works", {
+
+  # No error
+  expect_error(file_content <- get_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
+                                                acess_token = Sys.getenv("FIGMA_TOKEN")), 
+               regexp = NA)
+  
+  expect_error(file_content <- get_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb"), 
+               regexp = NA)
+  
+  expect_equal(length(file_content), 
+               12)
+  
+  # Error
+  expect_error(file_content <- get_file_content(acess_token = ""))
+  
+  expect_error(file_content <- get_file_content(file_key = ""))
+  
+  expect_error(file_content <- get_file_content(file_key = "", 
+                                                acess_token = ""))
+  
+})
+```
+
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(flat_file = "dev/flat_figma_api_connection.Rmd", 
+               vignette_name = "b - Figma API connection and file extraction", 
+               open_vignette = FALSE,
+               check = FALSE,
+               overwrite = TRUE)
+```

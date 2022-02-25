@@ -1,0 +1,128 @@
+---
+title: "{ggplot2} elements extraction from the Figma file"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r development, include=FALSE}
+library(testthat)
+library(httr)
+library(glue)
+library(stringr)
+pkgload::load_all()
+```
+
+<!--
+ You need to run the 'description' chunk in the '0-dev_history.Rmd' file before continuing your code there.
+-->
+
+# Extraction of the {ggplot2} design content of a file: `get_ggplot_element_design()` function
+
+```{r function-get_ggplot_element_design}
+#' Extract the {ggplot2} design content of a file.
+#'
+#' @param name_ggplot_element Character. Name of the {ggplot2} element, as defined in \link[ggplot2]{theme}.
+#' @param file_content List. Content of the Figma file, as returned by \link[swatch]{get_file_content}.
+#'
+#' @importFrom purrr map_chr
+#' @importFrom grDevices rgb
+#' @importFrom grDevices rgb
+#' 
+#' @return List. The {ggplot2} element properties.
+#' @export
+get_ggplot_element_design <- function(name_ggplot_element, file_content) {
+  
+  # Find info about elements ids and names in Figma
+  main_components_names <- file_content$components %>% 
+    map_chr(~ .x$name)
+  
+  sub_components_id <- file_content$document$children[[1]]$children %>% 
+    map_chr(~ .x$id)
+  
+  # Find the id of the ggplot2 element
+  element_id <- names(main_components_names[main_components_names == name_ggplot_element])
+
+  # Extract the desing content of the ggplot2 element
+  element_design <- file_content$document$children[[1]]$children[[which(sub_components_id == element_id)]]
+
+  # Construct a list with the desing elements
+  list_element_design <- list()
+
+  if (name_ggplot_element == "panel_background") {
+    
+    # Fill color
+    list_element_design[[length(list_element_design) + 1]] <- rgb(element_design$backgroundColor$r, 
+                                                                  element_design$backgroundColor$g,
+                                                                  element_design$backgroundColor$b,
+                                                                  maxColorValue = 1)
+    names(list_element_design)[[length(list_element_design)]] <- "fill_color"
+    
+    # Fill opacity
+    list_element_design[[length(list_element_design) + 1]] <- element_design$backgroundColor$a
+    names(list_element_design)[[length(list_element_design)]] <- "fill_opacity"
+    
+  }
+  
+  if (name_ggplot_element %in% c("panel_background", "panel_grid")) {
+    
+    # Stroke color
+    list_element_design[[length(list_element_design) + 1]] <- rgb(element_design$strokes[[1]]$color$r, 
+                                                                  element_design$strokes[[1]]$color$g,
+                                                                  element_design$strokes[[1]]$color$b,
+                                                                  maxColorValue = 1)
+    names(list_element_design)[[length(list_element_design)]] <- "stroke_color"
+    
+    # Stroke opacity
+    list_element_design[[length(list_element_design) + 1]] <- element_design$strokes[[1]]$color$a
+    names(list_element_design)[[length(list_element_design)]] <- "stroke_opacity"
+    
+    # Stroke weight
+    list_element_design[[length(list_element_design) + 1]] <- element_design$strokeWeigh
+    names(list_element_design)[[length(list_element_design)]] <- "stroke_weight"
+    
+  }
+  
+  return(list_element_design)
+  
+}
+```
+
+```{r examples-get_ggplot_element_design}
+file_content <- get_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
+                                 acess_token = Sys.getenv("FIGMA_TOKEN"))
+
+get_ggplot_element_design(name_ggplot_element = "panel_background",
+                          file_content = file_content)
+
+get_ggplot_element_design(name_ggplot_element = "panel_grid",
+                          file_content = file_content)
+```
+
+```{r tests-get_ggplot_element_design}
+test_that("get_file_content() works", {
+
+  file_content <- get_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
+                                 acess_token = Sys.getenv("FIGMA_TOKEN"))
+  
+  expect_equal(object = get_ggplot_element_design(name_ggplot_element = "panel_background", 
+                                                  file_content = file_content), 
+               expected = list(fill_color = "#5FBDDE", 
+                               fill_opacity = 0.600000023841858, 
+                               stroke_color = "#D29F9F", 
+                               stroke_opacity = 1, 
+                               stroke_weight = 4)
+  )
+ 
+})
+```
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(flat_file = "dev/flat_figma_design_extraction.Rmd", 
+               vignette_name = "c - {ggplot2} elements extraction from the Figma file", 
+               open_vignette = FALSE,
+               check = FALSE,
+               overwrite = TRUE)
+```

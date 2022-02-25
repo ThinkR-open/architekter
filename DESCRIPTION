@@ -1,0 +1,29 @@
+Package: swatch
+Title: Build A {ggplot} Theme From Figma File
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Margot", "Brard", , "margot@thinkr.fr", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-6754-0659")),
+    person("ThinkR", role = "cph")
+  )
+Description: Use a Figma file -a free online UI/UX design tool- to build a
+    theme for your graphics created with {ggplot2}. Create a theme,
+    palettes and scale functions easily.
+License: MIT + file LICENSE
+Imports: 
+    cli,
+    glue,
+    grDevices,
+    httr,
+    magrittr,
+    purrr,
+    stringr
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
