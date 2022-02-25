@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   b-figma-api-connection-and-file-extraction: b-figma-api-connection-and-file-extraction.html
   c-ggplot2-elements-extraction-from-the-figma-file: c-ggplot2-elements-extraction-from-the-figma-file.html
-last_built: 2022-02-25T21:24Z
+last_built: 2022-02-25T21:39Z
 urls:
   reference: https://thinkr-open.github.io/fusen/reference
   article: https://thinkr-open.github.io/fusen/articles
