@@ -28,18 +28,21 @@
     <loc>https://thinkr-open.github.io/fusen/news/index.html</loc>
   </url>
   <url>
-    <loc>https://thinkr-open.github.io/fusen/reference/get_file_content.html</loc>
+    <loc>https://thinkr-open.github.io/fusen/reference/add_ggplot_type.html</loc>
   </url>
   <url>
-    <loc>https://thinkr-open.github.io/fusen/reference/get_ggplot_element_design.html</loc>
+    <loc>https://thinkr-open.github.io/fusen/reference/get_figma_file_content.html</loc>
   </url>
   <url>
     <loc>https://thinkr-open.github.io/fusen/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://thinkr-open.github.io/fusen/reference/my_fun.html</loc>
+    <loc>https://thinkr-open.github.io/fusen/reference/pipe.html</loc>
   </url>
   <url>
-    <loc>https://thinkr-open.github.io/fusen/reference/pipe.html</loc>
+    <loc>https://thinkr-open.github.io/fusen/reference/raw_to_design_tibble.html</loc>
+  </url>
+  <url>
+    <loc>https://thinkr-open.github.io/fusen/reference/toy_raw_file_content.html</loc>
   </url>
 </urlset>
