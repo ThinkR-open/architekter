@@ -10,14 +10,19 @@ Description: Use a Figma file -a free online UI/UX design tool- to build a
     theme for your graphics created with {ggplot2}. Create a theme,
     palettes and scale functions easily.
 License: MIT + file LICENSE
+Depends: 
+    R (>= 2.10)
 Imports: 
     cli,
+    dplyr,
     glue,
-    grDevices,
     httr,
     magrittr,
     purrr,
-    stringr
+    readr,
+    stringr,
+    tibble,
+    tidyr
 Suggests: 
     knitr,
     rmarkdown,
@@ -25,5 +30,6 @@ Suggests:
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2

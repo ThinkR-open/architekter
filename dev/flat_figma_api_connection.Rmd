@@ -27,12 +27,12 @@ pkgload::load_all()
 - Restart R session `rstudioapi::restartSession()`
 - Check if the personal access token is registered `Sys.getenv("FIGMA_TOKEN")` 
 
-## Extraction of the content of a file
+## Extraction of the content of a file (in the form of a list)
 
 - Find the key of your Figma file. It corresponds to the character **wRqIvMmymzSPuj0sEhnORb** in the url "https://www.figma.com/file/**wRqIvMmymzSPuj0sEhnORb**/..." (example).
 
-```{r function-get_file_content}
-#' Connect to Figma API and extract content of a file.
+```{r function-get_figma_file_content}
+#' Connect to Figma API and extract the raw content of a file.
 #'
 #' @param file_key Character. Key of the Figma file. 
 #' @param acess_token Character. Figma access token.
@@ -49,9 +49,9 @@ pkgload::load_all()
 #' The acess token can be created in your Figma account 
 #' (https://www.figma.com/developers/api Section Access tokens)
 #'
-#' @return A list. Content or the file.
+#' @return A list. Content of the file.
 #' @export
-get_file_content <- function(file_key, acess_token = Sys.getenv("FIGMA_TOKEN")) {
+get_figma_file_content <- function(file_key, acess_token = Sys.getenv("FIGMA_TOKEN")) {
   
   api_response <- VERB(verb = "GET", 
                        url = glue("https://api.figma.com/v1/files/{file_key}"), 
@@ -79,36 +79,35 @@ get_file_content <- function(file_key, acess_token = Sys.getenv("FIGMA_TOKEN")) 
 }
 ```
 
-```{r examples-get_file_content}
-file_content <- get_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
-                                 acess_token = Sys.getenv("FIGMA_TOKEN"))
+```{r examples-get_figma_file_content}
+raw_file_content <- get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
+                                         acess_token = Sys.getenv("FIGMA_TOKEN"))
 ```
 
-```{r tests-get_file_content}
-test_that("get_file_content() works", {
+```{r tests-get_figma_file_content}
+test_that("get_figma_file_content() works", {
 
   # No error
-  expect_error(file_content <- get_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
-                                                acess_token = Sys.getenv("FIGMA_TOKEN")), 
+  expect_error(file_content <- get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
+                                                    acess_token = Sys.getenv("FIGMA_TOKEN")), 
                regexp = NA)
   
-  expect_error(file_content <- get_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb"), 
+  expect_error(file_content <- get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb"), 
                regexp = NA)
   
   expect_equal(length(file_content), 
                12)
   
   # Error
-  expect_error(file_content <- get_file_content(acess_token = ""))
+  expect_error(file_content <- get_figma_file_content(acess_token = ""))
   
-  expect_error(file_content <- get_file_content(file_key = ""))
+  expect_error(file_content <- get_figma_file_content(file_key = ""))
   
-  expect_error(file_content <- get_file_content(file_key = "", 
-                                                acess_token = ""))
+  expect_error(file_content <- get_figma_file_content(file_key = "", 
+                                                    acess_token = ""))
   
 })
 ```
-
 
 ```{r development-inflate, eval=FALSE}
 # Run but keep eval=FALSE to avoid infinite loop

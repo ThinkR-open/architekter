@@ -37,6 +37,16 @@ usethis::use_git()
 usethis::use_git_ignore(c(".DS_Store", ".Rproj.user", ".Rdata", ".Rhistory", ".httr-oauth"))
 ```
 
+# Add data
+
+```{r, eval=FALSE}
+# For example data
+usethis::use_data_raw()
+
+# For dev data
+dir.create(here::here("inst"))
+```
+
 # Set extra sources of documentation
 
 ```{r, eval=FALSE}
@@ -78,6 +88,23 @@ fusen::add_flat_template("add")
 ```{r}
 # Simulate package installation
 pkgload::load_all()
+
+# Inflate all flat files
+inflate_a_given_flat <- function(name_flat_rmd) {
+
+  flat_in_line <- readLines(file.path("dev", name_flat_rmd))
+
+  start_inflate_chunk_in_code <- which(stringr::str_detect(flat_in_line, "fusen::inflate\\(flat_file ="))
+
+  inflate_code <- flat_in_line[start_inflate_chunk_in_code : (start_inflate_chunk_in_code + 4)] %>% stringr::str_c(collapse = "")
+
+  eval(parse(text = inflate_code))
+
+  return(message(glue::glue("{name_flat_rmd} inflate ok")))
+
+}
+list.files("dev")[list.files("dev") %>% stringr::str_detect("^flat")] %>%
+  purrr::walk(inflate_a_given_flat)
 
 # Generate documentation and deal with dependencies
 attachment::att_amend_desc()

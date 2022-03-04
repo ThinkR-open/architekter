@@ -1,4 +1,4 @@
-
+.gitlab
 ^dev$
 ^LICENSE\.md$
 ^.*\.Rproj$
@@ -9,3 +9,4 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^data-raw$
