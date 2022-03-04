@@ -37,6 +37,12 @@ usethis::use_git()
 usethis::use_git_ignore(c(".DS_Store", ".Rproj.user", ".Rdata", ".Rhistory", ".httr-oauth"))
 ```
 
+# Add data
+
+```{r, eval=FALSE}
+usethis::use_data_raw()
+```
+
 # Set extra sources of documentation
 
 ```{r, eval=FALSE}
