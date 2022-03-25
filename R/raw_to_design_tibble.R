@@ -26,9 +26,13 @@ raw_to_design_tibble <- function(.data) {
   mutate(id = names(raw_list_main_comp)) %>% 
   select(id, everything())
   
+  # Pages names
+  pages_names <- .data$document[[4]] %>% map_chr(~ .x$name)
+  id_page_templates <- which(pages_names %in% c("Page 1", "Template"))
+    
   # Design of main components
   # _select only the design of main components
-  raw_list_design <- .data$document$children[[1]]$children
+  raw_list_design <- .data$document$children[[id_page_templates]]$children
   id_sub_comp <- raw_list_design %>% map_chr(~ .x$id)
   id_main_comp <- which(id_sub_comp %in% (data_info %>% pull(id)) == TRUE)
   names(id_main_comp) <- data_info$name[which((data_info %>% pull(id) %in% id_sub_comp) == TRUE)]
@@ -43,8 +47,13 @@ raw_to_design_tibble <- function(.data) {
   data_design <- tibble_design_comp %>% 
     unnest_wider(col = raw_list)
   # _keep only necessary columns
-  data_design <- data_design %>% 
-    select(type, fills, strokes, strokeWeight, strokeDashes, style)
+  if ("strokeDashes" %in% colnames(data_design)) {
+    data_design <- data_design %>% 
+      select(type, fills, strokes, strokeWeight, strokeDashes, style)
+  } else {
+    data_design <- data_design %>% 
+      select(type, fills, strokes, strokeWeight, style)
+  }
   # _add the name of the element and unnest type
   data_design <- data_design %>% 
     mutate(element_name = names(raw_list_main_design)) %>% 
@@ -86,16 +95,18 @@ raw_to_design_tibble <- function(.data) {
       )
   }
   # _unnest strokeDashes
-  if (any(!is.na(data_design %>% pull(strokeDashes)))) {
-    data_design <- data_design %>% 
-      select(-strokeDashes) %>% 
-      left_join(
-        tibble(strokeDashes = data_design$strokeDashes %>% 
-                 map_lgl(~ !is.null(.x))) %>% 
-          filter(strokeDashes == TRUE) %>% 
-          mutate(element_name = data_design %>% unnest(strokeDashes) %>% distinct(element_name) %>% pull()),
-        by = "element_name"
-      )
+  if ("strokeDashes" %in% colnames(data_design)) {
+    if (any(!is.na(data_design %>% pull(strokeDashes)))) {
+      data_design <- data_design %>% 
+        select(-strokeDashes) %>% 
+        left_join(
+          tibble(strokeDashes = data_design$strokeDashes %>% 
+                   map_lgl(~ !is.null(.x))) %>% 
+            filter(strokeDashes == TRUE) %>% 
+            mutate(element_name = data_design %>% unnest(strokeDashes) %>% distinct(element_name) %>% pull()),
+          by = "element_name"
+        )
+    }
   }
   
   cli_alert_success("The raw Figma content has been successfully transformed to a tibble.")

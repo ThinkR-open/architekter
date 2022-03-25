@@ -20,9 +20,80 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
+
+### Hey, what is that?
+
+Well...
+
+Imagine that...
+
+You are about to have your house built. Where do you start? By creating the plans, right?
+
+Well, it's the same with a `{ggplot2}` graph. Start by building the plans of your data visualization: its organization, its colours, etc. In a familiar click-button environment (you will seen, Figma will do the job very well).
+
+Like an architect who guides you in extracting the ideas you have in mind for the structure of your house and in transforming them into technical concepts, `{architekter}` will build for you the basis of your `theme()` function, by extracting the `{ggplot2}` elements from your Figma model. You can then modify your `theme()` function directly in R. But `{architekter}` greatly prefers this work, especially if you are not yet very familiar with the construction of `{ggplot2}` themes.
+
+> "architekter" means "architect" in Breton, a regional language spoken in France. And that Brittany is one of the most beautiful places in the world.
+
+### What is Figma?
+
+Figma is a the collaborative interface design tool. 
+
+Figma is free.
+
+More information here: https://www.figma.com/design/
+
+```{r echo=FALSE, out.width='5%', fig.align='center'}
+knitr::include_graphics("man/figures/logo_figma.svg")
+```
+
+### How can I install it?
+
 You can install the development version of {architekter} from [GitHub](https://github.com/) with:
 
-``` r
+```{r eval=FALSE}
 # install.packages("devtools")
 devtools::install_github("ThinkR-open/architekter")
+```
+
+### How should I use it?
+
+- Create a Figma account (https://www.figma.com)
+
+- Duplicate the following Figma file: https://www.figma.com/community/file/1089210046480653802 _You we get a copy on your Figma account, and you will be able to modify your version to create your own {ggplot2} maquettes in Figma_
+
+```{r echo=FALSE, out.width='50%', fig.align='center'}
+knitr::include_graphics("man/figures/figma_thumb.png")
+```
+
+- Create a personal access token on your Figma account (https://www.figma.com/developers/api Section Access tokens)
+
+- Create an environment variable with your Figma Token:
+
+```{r eval=FALSE}
+Sys.setenv(FIGMA_TOKEN = "your-token-here")
+```
+
+- Restart your R session
+
+- Load `{architekter}`
+
+```{r}
+library(architekter)
+```
+
+- Extract the {ggplot2} theme elements from your Figma file:
+
+```{r eval=FALSE}
+get_figma_file_content(file_key = "your-file-key",
+                       acess_token = Sys.getenv("FIGMA_TOKEN")) %>% 
+extract_ggplot_theme()
+```
+
+#### Example
+
+```{r}
+get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
+                       acess_token = Sys.getenv("FIGMA_TOKEN")) %>% 
+extract_ggplot_theme()
 ```

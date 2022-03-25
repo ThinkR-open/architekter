@@ -73,16 +73,28 @@ determine_ggplot_theme_elements <- function(.data) {
         TRUE ~ NA_character_
       )
     ) %>% 
-    select(-fills_color, -strokes_color, -fills_blendMode, -strokes_blendMode) %>% 
+    select(-fills_color, -strokes_color, -fills_blendMode, -strokes_blendMode) 
     # _linetype
-    mutate(
-      linetype = case_when(
-        element_type %in% c("rect", "line") & strokeDashes == TRUE ~ 3,
-        TRUE ~ NA_real_
-      )
-    ) %>% 
-    select(-strokeDashes, -strokes_type, -fills_type)
-  
+    if ("strokeDashes" %in% colnames(data_ggplot_theme_elements)) {
+      data_ggplot_theme_elements <- data_ggplot_theme_elements %>% 
+        mutate(
+          linetype = case_when(
+            element_type %in% c("rect", "line") & strokeDashes == TRUE ~ 3,
+            TRUE ~ NA_real_
+          )
+        ) %>% 
+        select(-strokeDashes, -strokes_type, -fills_type)
+    } else {
+      data_ggplot_theme_elements <- data_ggplot_theme_elements %>% 
+        mutate(
+          linetype = case_when(
+            element_type %in% c("rect", "line") == TRUE ~ 0,
+            TRUE ~ NA_real_
+          )
+        ) %>% 
+        select(-strokes_type, -fills_type)
+    }
+    
     cli_alert_success("The ggplot2 theme elements have been extracted.")
     
     return(data_ggplot_theme_elements)
