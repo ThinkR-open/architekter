@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# architekter <img src="man/figures/hex.png" align="right" alt="" width="120" />
+# architekter <img src="man/figures/architekter_hex.png" align="right" alt="" width="120" />
 
 <!-- badges: start -->
 
