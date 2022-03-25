@@ -32,6 +32,7 @@ get_figma_file_content <- function(file_key, acess_token = Sys.getenv("FIGMA_TOK
   if (api_response$status_code == "404") {
     
     cli_alert_danger("Content of the file has not been extracted. Please check the file key or your access token.")
+    
     stop()
     
   } else {
@@ -41,7 +42,7 @@ get_figma_file_content <- function(file_key, acess_token = Sys.getenv("FIGMA_TOK
     file_name <- file_content$name %>% 
       str_remove_all("[:punct:]")
     
-    cli_alert_success(glue("Content of the file {file_name} has been successfully extracted."))
+    cli_alert_success(glue("Content of the file '{file_name}' has been successfully extracted."))
     
     return(file_content)
     

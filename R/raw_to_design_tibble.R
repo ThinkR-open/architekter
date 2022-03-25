@@ -2,32 +2,33 @@
 
 #' Transform a raw Figma content to a tibble with only the design description of the main components.
 #'
-#' @param raw_list List. An object returned by \code{swatch::\link{get_figma_file_content}()}
+#' @param .data List. An object returned by \code{swatch::\link{get_figma_file_content}()}
 #' 
 #' @importFrom tibble tibble
 #' @importFrom tidyr unnest_wider unnest
-#' @importFrom dplyr mutate select everything pull
-#' @importFrom purrr map_chr
+#' @importFrom dplyr mutate select everything pull bind_rows distinct
+#' @importFrom purrr map_chr map flatten map_lgl
+#' @importFrom grDevices rgb
+#' @importFrom cli cli_alert_success
 #'
-#' @return A tibble with some nested colummns. Design description of the main components.
+#' @return A tibble. Design description of the main components.
 #' @export
 #' @examples
 #' data(toy_raw_file_content)
-#' raw_to_design_tibble(toy_raw_file_content)
-raw_to_design_tibble <- function(raw_list) {
+#' toy_raw_file_content %>% raw_to_design_tibble()
+raw_to_design_tibble <- function(.data) {
   
   # Info about main components
-  raw_list_main_comp <- raw_list$components
+  raw_list_main_comp <- .data$components
   tibble_main_comp <- tibble(raw_list = raw_list_main_comp)
   data_info <- tibble_main_comp %>% 
     unnest_wider(col = raw_list) %>% 
-  mutate(id = names(raw_list$components)) %>% 
+  mutate(id = names(raw_list_main_comp)) %>% 
   select(id, everything())
-  data_info
   
   # Design of main components
   # _select only the design of main components
-  raw_list_design <- raw_list$document$children[[1]]$children
+  raw_list_design <- .data$document$children[[1]]$children
   id_sub_comp <- raw_list_design %>% map_chr(~ .x$id)
   id_main_comp <- which(id_sub_comp %in% (data_info %>% pull(id)) == TRUE)
   names(id_main_comp) <- data_info$name[which((data_info %>% pull(id) %in% id_sub_comp) == TRUE)]
@@ -43,12 +44,61 @@ raw_to_design_tibble <- function(raw_list) {
     unnest_wider(col = raw_list)
   # _keep only necessary columns
   data_design <- data_design %>% 
-    select(type, fills, strokes, strokeWeight, opacity, style)
+    select(type, fills, strokes, strokeWeight, strokeDashes, style)
   # _add the name of the element and unnest type
   data_design <- data_design %>% 
     mutate(element_name = names(raw_list_main_design)) %>% 
     unnest(type) %>% 
     select(element_name, everything())
+  # _unnest style
+  data_design <- data_design %>%  
+    unnest_wider(style)
+  # _unnest fills
+  data_design <- data_design %>% 
+    select(-fills) %>% 
+    left_join(
+      data_design$fills %>% 
+        flatten() %>% 
+        map(~ tibble(fills_blendMode = .x$blendMode,
+                     fills_type = .x$type,
+                     fills_color = rgb(.x$color$r, .x$color$g, .x$color$b, alpha = .x$color$a)
+        )
+        ) %>% 
+        bind_rows() %>% 
+        mutate(element_name = data_design %>% unnest(fills) %>% distinct(element_name) %>% pull()),
+      by = "element_name"
+    )
+  # _unnest strokes
+  if (any(!is.na(data_design %>% pull(strokes)))) {
+    data_design <- data_design %>% 
+      select(-strokes) %>% 
+      left_join(
+        data_design$strokes %>% 
+          flatten() %>% 
+          map(~ tibble(strokes_blendMode = .x$blendMode,
+                       strokes_type = .x$type,
+                       strokes_color = rgb(.x$color$r, .x$color$g, .x$color$b, alpha = .x$color$a)
+          )
+          ) %>% 
+          bind_rows() %>% 
+          mutate(element_name = data_design %>% unnest(strokes) %>% distinct(element_name) %>% pull()),
+        by = "element_name"
+      )
+  }
+  # _unnest strokeDashes
+  if (any(!is.na(data_design %>% pull(strokeDashes)))) {
+    data_design <- data_design %>% 
+      select(-strokeDashes) %>% 
+      left_join(
+        tibble(strokeDashes = data_design$strokeDashes %>% 
+                 map_lgl(~ !is.null(.x))) %>% 
+          filter(strokeDashes == TRUE) %>% 
+          mutate(element_name = data_design %>% unnest(strokeDashes) %>% distinct(element_name) %>% pull()),
+        by = "element_name"
+      )
+  }
+  
+  cli_alert_success("The raw Figma content has been successfully transformed to a tibble.")
   
   return(data_design)
 
