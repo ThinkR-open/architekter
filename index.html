@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Build A {ggplot} Theme From Figma File • swatch</title>
+<title>Build A {ggplot} Maquette From Figma File • architekter</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Bootstrap --><link href="cosmo.css" rel="stylesheet">
 <link href="thinkr.css" rel="stylesheet">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Build A {ggplot} Theme From Figma File">
+<script src="pkgdown.js"></script><meta property="og:title" content="Build A {ggplot} Maquette From Figma File">
 <meta property="og:description" content="Use a Figma file -a free online UI/UX design tool- to build a
     theme for your graphics created with {ggplot2}. Create a theme,
     palettes and scale functions easily.">
@@ -52,7 +52,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">swatch</a>
+        <a class="navbar-link" href="index.html">architekter</a>
         <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
       </span>
     </div>
@@ -73,7 +73,10 @@
       <a href="articles/b-figma-api-connection-and-file-extraction.html">b - Figma API connection and file extraction</a>
     </li>
     <li>
-      <a href="articles/c-ggplot2-elements-extraction-from-the-figma-file.html">c - {ggplot2} elements extraction from the Figma file</a>
+      <a href="articles/c-design-elements-extraction-from-the-figma-file.html">c - Design elements extraction from the Figma file</a>
+    </li>
+    <li>
+      <a href="articles/d-extract-the-ggplot2-theme-from-a-figma-file.html">d - Extract the {ggplot2} theme from a Figma file</a>
     </li>
   </ul>
 </li>
@@ -104,14 +107,89 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="swatch-">swatch <img src="reference/figures/hex.png" align="right" alt="" width="120"><a class="anchor" aria-label="anchor" href="#swatch-"></a>
+<div class="page-header"><h1 id="architekter-">architekter <img src="reference/figures/hex.png" align="right" alt="" width="120"><a class="anchor" aria-label="anchor" href="#architekter-"></a>
 </h1></div>
 <!-- badges: start -->
 
-<p>You can install the development version of {swatch} from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<div class="section level3">
+<h3 id="hey-what-is-that">Hey, what is that?<a class="anchor" aria-label="anchor" href="#hey-what-is-that"></a>
+</h3>
+<p>Well…</p>
+<p>Imagine that…</p>
+<p>You are about to have your house built. Where do you start? By creating the plans, right?</p>
+<p>Well, it’s the same with a <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a> graph. Start by building the plans of your data visualization: its organization, its colours, etc. In a familiar click-button environment (you will seen, Figma will do the job very well).</p>
+<p>Like an architect who guides you in extracting the ideas you have in mind for the structure of your house and in transforming them into technical concepts, <code>{architekter}</code> will build for you the basis of your <code>theme()</code> function, by extracting the <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a> elements from your Figma model. You can then modify your <code>theme()</code> function directly in R. But <code>{architekter}</code> greatly prefers this work, especially if you are not yet very familiar with the construction of <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a> themes.</p>
+<blockquote>
+<p>“architekter” means “architect” in Breton, a regional language spoken in France. And that Brittany is one of the most beautiful places in the world.</p>
+</blockquote>
+</div>
+<div class="section level3">
+<h3 id="what-is-figma">What is Figma?<a class="anchor" aria-label="anchor" href="#what-is-figma"></a>
+</h3>
+<p>Figma is a the collaborative interface design tool.</p>
+<p>Figma is free.</p>
+<p>More information here: <a href="https://www.figma.com/design/" class="external-link uri">https://www.figma.com/design/</a></p>
+<p><img src="reference/figures/logo_figma.svg" width="5%" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="how-can-i-install-it">How can I install it?<a class="anchor" aria-label="anchor" href="#how-can-i-install-it"></a>
+</h3>
+<p>You can install the development version of {architekter} from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ThinkR-open/swatch"</span><span class="op">)</span></code></pre></div>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ThinkR-open/architekter"</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="how-should-i-use-it">How should I use it?<a class="anchor" aria-label="anchor" href="#how-should-i-use-it"></a>
+</h3>
+<ul>
+<li><p>Create a Figma account (<a href="https://www.figma.com" class="external-link uri">https://www.figma.com</a>)</p></li>
+<li><p>Duplicate the following Figma file: <a href="https://www.figma.com/community/file/1089210046480653802" class="external-link uri">https://www.figma.com/community/file/1089210046480653802</a> <em>You we get a copy on your Figma account, and you will be able to modify your version to create your own {ggplot2} maquettes in Figma</em></p></li>
+</ul>
+<p><img src="reference/figures/figma_thumb.png" width="50%" style="display: block; margin: auto;"></p>
+<ul>
+<li><p>Create a personal access token on your Figma account (<a href="https://www.figma.com/developers/api" class="external-link uri">https://www.figma.com/developers/api</a> Section Access tokens)</p></li>
+<li><p>Create an environment variable with your Figma Token:</p></li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>FIGMA_TOKEN <span class="op">=</span> <span class="st">"your-token-here"</span><span class="op">)</span></code></pre></div>
+<ul>
+<li><p>Restart your R session</p></li>
+<li><p>Load <code>{architekter}</code></p></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">architekter</span><span class="op">)</span></code></pre></div>
+<ul>
+<li>Extract the {ggplot2} theme elements from your Figma file:</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/get_figma_file_content.html">get_figma_file_content</a></span><span class="op">(</span>file_key <span class="op">=</span> <span class="st">"your-file-key"</span>,
+                       acess_token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"FIGMA_TOKEN"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+<span class="fu"><a href="reference/extract_ggplot_theme.html">extract_ggplot_theme</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="section level4">
+<h4 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h4>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/get_figma_file_content.html">get_figma_file_content</a></span><span class="op">(</span>file_key <span class="op">=</span> <span class="st">"wRqIvMmymzSPuj0sEhnORb"</span>,
+                       acess_token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"FIGMA_TOKEN"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+<span class="fu"><a href="reference/extract_ggplot_theme.html">extract_ggplot_theme</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; ✓ Content of the file 'ggplot2 templating' has been successfully extracted.</span>
+<span class="co">#&gt; ✓ The raw Figma content has been successfully transformed to a tibble.</span>
+<span class="co">#&gt; ✓ The ggplot2 theme elements have been extracted.</span>
+<span class="co">#&gt; # A tibble: 8 × 10</span>
+<span class="co">#&gt;   element_name  element_type letter_spacing lineheight family   size hjust color</span>
+<span class="co">#&gt;   &lt;chr&gt;         &lt;chr&gt;                 &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;</span>
+<span class="co">#&gt; 1 panel_backgr… rect                  NA          NA   &lt;NA&gt;    0.400    NA #000…</span>
+<span class="co">#&gt; 2 legend_text   text                   0.36       10.5 Roboto  9         1 #000…</span>
+<span class="co">#&gt; 3 legend_title  text                   0.44       12.9 Roboto 11         1 #000…</span>
+<span class="co">#&gt; 4 panel_grid    line                  NA          NA   &lt;NA&gt;    1        NA #5FB…</span>
+<span class="co">#&gt; 5 axis_text     text                   0          10.5 Roboto  9         1 #B0B…</span>
+<span class="co">#&gt; 6 axis_title    text                   0.44       12.9 Roboto 11         1 #000…</span>
+<span class="co">#&gt; 7 plot_subtitle text                   0.48       14.1 Robot… 12         1 #000…</span>
+<span class="co">#&gt; 8 plot_title    text                   0.8        23.4 Robot… 20         0 #000…</span>
+<span class="co">#&gt; # … with 2 more variables: fill &lt;chr&gt;, linetype &lt;dbl&gt;</span></code></pre></div>
+</div>
+</div>
 </div>
   </div>
 
@@ -128,7 +206,7 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing swatch</a></li>
+<li><a href="authors.html#citation">Citing architekter</a></li>
 </ul>
 </div>
 
@@ -143,7 +221,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/ThinkR-open/swatch/actions" class="external-link"><img src="https://github.com/ThinkR-open/swatch/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/ThinkR-open/architekter/actions" class="external-link"><img src="https://github.com/ThinkR-open/architekter/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 </ul>
 </div>

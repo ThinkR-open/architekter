@@ -13,7 +13,10 @@
     <loc>https://thinkr-open.github.io/fusen/articles/b-figma-api-connection-and-file-extraction.html</loc>
   </url>
   <url>
-    <loc>https://thinkr-open.github.io/fusen/articles/c-ggplot2-elements-extraction-from-the-figma-file.html</loc>
+    <loc>https://thinkr-open.github.io/fusen/articles/c-design-elements-extraction-from-the-figma-file.html</loc>
+  </url>
+  <url>
+    <loc>https://thinkr-open.github.io/fusen/articles/d-extract-the-ggplot2-theme-from-a-figma-file.html</loc>
   </url>
   <url>
     <loc>https://thinkr-open.github.io/fusen/articles/index.html</loc>
@@ -28,7 +31,13 @@
     <loc>https://thinkr-open.github.io/fusen/news/index.html</loc>
   </url>
   <url>
-    <loc>https://thinkr-open.github.io/fusen/reference/add_ggplot_type.html</loc>
+    <loc>https://thinkr-open.github.io/fusen/reference/add_ggplot_theme_type.html</loc>
+  </url>
+  <url>
+    <loc>https://thinkr-open.github.io/fusen/reference/determine_ggplot_theme_elements.html</loc>
+  </url>
+  <url>
+    <loc>https://thinkr-open.github.io/fusen/reference/extract_ggplot_theme.html</loc>
   </url>
   <url>
     <loc>https://thinkr-open.github.io/fusen/reference/get_figma_file_content.html</loc>
