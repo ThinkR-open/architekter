@@ -2,7 +2,7 @@
 
 #' Transform a raw Figma content to a tibble with only the design description of the main components.
 #'
-#' @param .data List. An object returned by \code{swatch::\link{get_figma_file_content}()}
+#' @param .data List. An object returned by \code{architekter::\link{get_figma_file_content}()}
 #' 
 #' @importFrom tibble tibble
 #' @importFrom tidyr unnest_wider unnest

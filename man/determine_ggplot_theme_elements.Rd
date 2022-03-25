@@ -7,7 +7,7 @@
 determine_ggplot_theme_elements(.data)
 }
 \arguments{
-\item{.data}{Tibble. An object returned by \code{swatch::\link{add_ggplot_theme_type}()}}
+\item{.data}{Tibble. An object returned by \code{architekter::\link{add_ggplot_theme_type}()}}
 }
 \value{
 A tibble with the values of the ggplot2 theme elements.

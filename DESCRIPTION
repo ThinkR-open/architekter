@@ -1,5 +1,5 @@
-Package: swatch
-Title: Build A {ggplot} Theme From Figma File
+Package: architekter
+Title: Build A {ggplot} Maquette From Figma File
 Version: 0.0.0.9000
 Authors@R: c(
     person("Margot", "Brard", , "margot@thinkr.fr", role = c("aut", "cre"),

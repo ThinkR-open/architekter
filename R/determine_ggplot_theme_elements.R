@@ -2,7 +2,7 @@
 
 #' Determine the ggplot2 theme elements.
 #'
-#' @param .data Tibble. An object returned by \code{swatch::\link{add_ggplot_theme_type}()}
+#' @param .data Tibble. An object returned by \code{architekter::\link{add_ggplot_theme_type}()}
 #' 
 #' @importFrom dplyr mutate case_when select rename
 #' @importFrom cli cli_alert_success

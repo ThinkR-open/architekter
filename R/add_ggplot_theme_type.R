@@ -2,7 +2,7 @@
 
 #' Add the type of the ggplot2 elements (i.e. "rect", "line" or "text")
 #'
-#' @param .data Tibble. An object returned by \code{swatch::\link{raw_to_design_tibble}()}
+#' @param .data Tibble. An object returned by \code{architekter::\link{raw_to_design_tibble}()}
 #' 
 #' @importFrom readr read_rds 
 #' @importFrom dplyr left_join mutate case_when filter select everything
@@ -21,7 +21,7 @@
 add_ggplot_theme_type <- function(.data) {
   
   corresp_element_type <- read_rds(system.file("corresp_element_type.rds",
-                                               package = "swatch"))
+                                               package = "architekter"))
   joined_data <- .data %>% 
     left_join(corresp_element_type, 
               by = "element_name") %>% 

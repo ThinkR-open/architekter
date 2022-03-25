@@ -7,7 +7,7 @@
 raw_to_design_tibble(.data)
 }
 \arguments{
-\item{.data}{List. An object returned by \code{swatch::\link{get_figma_file_content}()}}
+\item{.data}{List. An object returned by \code{architekter::\link{get_figma_file_content}()}}
 }
 \value{
 A tibble. Design description of the main components.

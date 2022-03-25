@@ -36,7 +36,7 @@ extract_ggplot_theme()
 ```{r echo=FALSE}
 corresp_element_type <- readr::read_rds(
   system.file("corresp_element_type.rds",
-              package = "swatch"))
+              package = "architekter"))
 corresp_element_type %>% 
   head() %>% 
   knitr::kable()
@@ -45,7 +45,7 @@ corresp_element_type %>%
 ```{r function-add_ggplot_theme_type}
 #' Add the type of the ggplot2 elements (i.e. "rect", "line" or "text")
 #'
-#' @param .data Tibble. An object returned by \code{swatch::\link{raw_to_design_tibble}()}
+#' @param .data Tibble. An object returned by \code{architekter::\link{raw_to_design_tibble}()}
 #' 
 #' @importFrom readr read_rds 
 #' @importFrom dplyr left_join mutate case_when filter select everything
@@ -56,7 +56,7 @@ corresp_element_type %>%
 add_ggplot_theme_type <- function(.data) {
   
   corresp_element_type <- read_rds(system.file("corresp_element_type.rds",
-                                               package = "swatch"))
+                                               package = "architekter"))
   joined_data <- .data %>% 
     left_join(corresp_element_type, 
               by = "element_name") %>% 
@@ -149,7 +149,7 @@ test_that("add_ggplot_theme_type works", {
 ```{r function-determine_ggplot_theme_elements}
 #' Determine the ggplot2 theme elements.
 #'
-#' @param .data Tibble. An object returned by \code{swatch::\link{add_ggplot_theme_type}()}
+#' @param .data Tibble. An object returned by \code{architekter::\link{add_ggplot_theme_type}()}
 #' 
 #' @importFrom dplyr mutate case_when select rename
 #' @importFrom cli cli_alert_success
@@ -281,7 +281,7 @@ test_that("determine_ggplot_theme_elements works", {
 ```{r function-extract_ggplot_theme}
 #' Extract the {ggplot2} theme elements from a Figma file
 #' 
-#' @param .data List. An object returned by \code{swatch::\link{get_figma_file_content}()}
+#' @param .data List. An object returned by \code{architekter::\link{get_figma_file_content}()}
 #' 
 #' @return A tibble with the {ggplot2} theme elements extracted from the Figma file.
 #' 

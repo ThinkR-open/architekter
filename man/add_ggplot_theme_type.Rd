@@ -7,7 +7,7 @@
 add_ggplot_theme_type(.data)
 }
 \arguments{
-\item{.data}{Tibble. An object returned by \code{swatch::\link{raw_to_design_tibble}()}}
+\item{.data}{Tibble. An object returned by \code{architekter::\link{raw_to_design_tibble}()}}
 }
 \value{
 The same tibble with an extra column with the ggplot2 type (i.e. "rect", "line" or "text").

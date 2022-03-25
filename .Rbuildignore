@@ -4,9 +4,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
-^swatch\.Rproj$
+^architekter\.Rproj$
 ^\.github$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
 ^data-raw$
+^architekter\.Rproj$
+^\.gitlab$

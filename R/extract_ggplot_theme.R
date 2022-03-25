@@ -2,7 +2,7 @@
 
 #' Extract the {ggplot2} theme elements from a Figma file
 #' 
-#' @param .data List. An object returned by \code{swatch::\link{get_figma_file_content}()}
+#' @param .data List. An object returned by \code{architekter::\link{get_figma_file_content}()}
 #' 
 #' @return A tibble with the {ggplot2} theme elements extracted from the Figma file.
 #' 
