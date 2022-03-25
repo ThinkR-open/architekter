@@ -19,8 +19,8 @@ corresp_element_type %>%
   write_rds("inst/corresp_element_type.rds")
 
 ## code to prepare `toy_raw_file_content` dataset goes here
-toy_raw_file_content <- get_raw_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
-                                             acess_token = Sys.getenv("FIGMA_TOKEN"))
+toy_raw_file_content <- get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
+                                               acess_token = Sys.getenv("FIGMA_TOKEN"))
 
 usethis::use_data(toy_raw_file_content, overwrite = TRUE)
 rstudioapi::navigateToFile("R/doc_toy_raw_file_content.R")

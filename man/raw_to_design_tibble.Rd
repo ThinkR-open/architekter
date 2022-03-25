@@ -4,18 +4,18 @@
 \alias{raw_to_design_tibble}
 \title{Transform a raw Figma content to a tibble with only the design description of the main components.}
 \usage{
-raw_to_design_tibble(raw_list)
+raw_to_design_tibble(.data)
 }
 \arguments{
-\item{raw_list}{List. An object returned by \code{swatch::\link{get_figma_file_content}()}}
+\item{.data}{List. An object returned by \code{architekter::\link{get_figma_file_content}()}}
 }
 \value{
-A tibble with some nested colummns. Design description of the main components.
+A tibble. Design description of the main components.
 }
 \description{
 Transform a raw Figma content to a tibble with only the design description of the main components.
 }
 \examples{
 data(toy_raw_file_content)
-raw_to_design_tibble(toy_raw_file_content)
+toy_raw_file_content \%>\% raw_to_design_tibble()
 }

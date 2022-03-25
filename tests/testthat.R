@@ -1,4 +1,4 @@
 library(testthat)
-library(swatch)
+library(architekter)
 
-test_check("swatch")
+test_check("architekter")

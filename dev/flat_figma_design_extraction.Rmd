@@ -1,5 +1,5 @@
 ---
-title: "{ggplot2} elements extraction from the Figma file"
+title: "Design elements extraction from the Figma file"
 output: html_document
 editor_options: 
   chunk_output_type: console
@@ -21,32 +21,44 @@ pkgload::load_all()
 
 This function is used to arrange the raw data (list) to a digest tibble. Only the information about main components is keept. Only the items corresponding to a design characteristic is kept (color, style, opacity, etc.).
 
+```{r}
+raw_file_content <- get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
+                                           acess_token = Sys.getenv("FIGMA_TOKEN"))
+
+raw_file_content %>% raw_to_design_tibble()
+```
+
 ```{r function-raw_to_design_tibble}
 #' Transform a raw Figma content to a tibble with only the design description of the main components.
 #'
-#' @param raw_list List. An object returned by \code{swatch::\link{get_figma_file_content}()}
+#' @param .data List. An object returned by \code{architekter::\link{get_figma_file_content}()}
 #' 
 #' @importFrom tibble tibble
 #' @importFrom tidyr unnest_wider unnest
-#' @importFrom dplyr mutate select everything pull
-#' @importFrom purrr map_chr
+#' @importFrom dplyr mutate select everything pull bind_rows distinct
+#' @importFrom purrr map_chr map flatten map_lgl
+#' @importFrom grDevices rgb
+#' @importFrom cli cli_alert_success
 #'
-#' @return A tibble with some nested colummns. Design description of the main components.
+#' @return A tibble. Design description of the main components.
 #' @export
-raw_to_design_tibble <- function(raw_list) {
+raw_to_design_tibble <- function(.data) {
   
   # Info about main components
-  raw_list_main_comp <- raw_list$components
+  raw_list_main_comp <- .data$components
   tibble_main_comp <- tibble(raw_list = raw_list_main_comp)
   data_info <- tibble_main_comp %>% 
     unnest_wider(col = raw_list) %>% 
-  mutate(id = names(raw_list$components)) %>% 
+  mutate(id = names(raw_list_main_comp)) %>% 
   select(id, everything())
-  data_info
   
+  # Pages names
+  pages_names <- .data$document[[4]] %>% map_chr(~ .x$name)
+  id_page_templates <- which(pages_names %in% c("Page 1", "Template"))
+    
   # Design of main components
   # _select only the design of main components
-  raw_list_design <- raw_list$document$children[[1]]$children
+  raw_list_design <- .data$document$children[[id_page_templates]]$children
   id_sub_comp <- raw_list_design %>% map_chr(~ .x$id)
   id_main_comp <- which(id_sub_comp %in% (data_info %>% pull(id)) == TRUE)
   names(id_main_comp) <- data_info$name[which((data_info %>% pull(id) %in% id_sub_comp) == TRUE)]
@@ -61,13 +73,69 @@ raw_to_design_tibble <- function(raw_list) {
   data_design <- tibble_design_comp %>% 
     unnest_wider(col = raw_list)
   # _keep only necessary columns
-  data_design <- data_design %>% 
-    select(type, fills, strokes, strokeWeight, opacity, style)
+  if ("strokeDashes" %in% colnames(data_design)) {
+    data_design <- data_design %>% 
+      select(type, fills, strokes, strokeWeight, strokeDashes, style)
+  } else {
+    data_design <- data_design %>% 
+      select(type, fills, strokes, strokeWeight, style)
+  }
   # _add the name of the element and unnest type
   data_design <- data_design %>% 
     mutate(element_name = names(raw_list_main_design)) %>% 
     unnest(type) %>% 
     select(element_name, everything())
+  # _unnest style
+  data_design <- data_design %>%  
+    unnest_wider(style)
+  # _unnest fills
+  data_design <- data_design %>% 
+    select(-fills) %>% 
+    left_join(
+      data_design$fills %>% 
+        flatten() %>% 
+        map(~ tibble(fills_blendMode = .x$blendMode,
+                     fills_type = .x$type,
+                     fills_color = rgb(.x$color$r, .x$color$g, .x$color$b, alpha = .x$color$a)
+        )
+        ) %>% 
+        bind_rows() %>% 
+        mutate(element_name = data_design %>% unnest(fills) %>% distinct(element_name) %>% pull()),
+      by = "element_name"
+    )
+  # _unnest strokes
+  if (any(!is.na(data_design %>% pull(strokes)))) {
+    data_design <- data_design %>% 
+      select(-strokes) %>% 
+      left_join(
+        data_design$strokes %>% 
+          flatten() %>% 
+          map(~ tibble(strokes_blendMode = .x$blendMode,
+                       strokes_type = .x$type,
+                       strokes_color = rgb(.x$color$r, .x$color$g, .x$color$b, alpha = .x$color$a)
+          )
+          ) %>% 
+          bind_rows() %>% 
+          mutate(element_name = data_design %>% unnest(strokes) %>% distinct(element_name) %>% pull()),
+        by = "element_name"
+      )
+  }
+  # _unnest strokeDashes
+  if ("strokeDashes" %in% colnames(data_design)) {
+    if (any(!is.na(data_design %>% pull(strokeDashes)))) {
+      data_design <- data_design %>% 
+        select(-strokeDashes) %>% 
+        left_join(
+          tibble(strokeDashes = data_design$strokeDashes %>% 
+                   map_lgl(~ !is.null(.x))) %>% 
+            filter(strokeDashes == TRUE) %>% 
+            mutate(element_name = data_design %>% unnest(strokeDashes) %>% distinct(element_name) %>% pull()),
+          by = "element_name"
+        )
+    }
+  }
+  
+  cli_alert_success("The raw Figma content has been successfully transformed to a tibble.")
   
   return(data_design)
 
@@ -76,72 +144,47 @@ raw_to_design_tibble <- function(raw_list) {
 
 ```{r examples-raw_to_design_tibble}
 data(toy_raw_file_content)
-raw_to_design_tibble(toy_raw_file_content)
+toy_raw_file_content %>% raw_to_design_tibble()
 ```
 
 ```{r tests-raw_to_design_tibble}
-test_that("raw_to_design_tibble() works", {
+test_that("raw_to_design_tibble works", {
   
   data(toy_raw_file_content)
   
   tibble_file_content <- raw_to_design_tibble(toy_raw_file_content)
 
   expect_equal(object = dim(tibble_file_content), 
-               expected = c(8, 7))
+               expected = c(8, 21))
   
   # long dput ----
-   expect_equal(object = tibble_file_content, 
-                expected = structure(list(element_name = c("panel_background", "legend_text", "legend_title", 
-                                                           "panel_grid", "axis_text", "axis_title", "plot_subtitle", "plot_title"
-                ), type = c("VECTOR", "TEXT", "TEXT", "VECTOR", "TEXT", "TEXT", 
-                            "TEXT", "TEXT"), fills = list(list(list(blendMode = "NORMAL", 
-                                                                    type = "SOLID", color = list(r = 0.372549027204514, g = 0.74117648601532, 
-                                                                                                 b = 0.87058824300766, a = 1))), list(list(blendMode = "NORMAL", 
-                                                                                                                                           type = "SOLID", color = list(r = 0, g = 0, b = 0, a = 1))), 
-                                                          list(list(blendMode = "NORMAL", type = "SOLID", color = list(
-                                                            r = 0, g = 0, b = 0, a = 1))), list(list(blendMode = "NORMAL", 
-                                                                                                     type = "SOLID", color = list(r = 0.372549027204514, g = 0.74117648601532, 
-                                                                                                                                  b = 0.87058824300766, a = 1))), list(list(blendMode = "NORMAL", 
-                                                                                                                                                                            type = "SOLID", color = list(r = 0.690196096897125, g = 0.690196096897125, 
-                                                                                                                                                                                                         b = 0.690196096897125, a = 1))), list(list(blendMode = "NORMAL", 
-                                                                                                                                                                                                                                                    type = "SOLID", color = list(r = 0, g = 0, b = 0, a = 1))), 
-                                                          list(list(blendMode = "NORMAL", type = "SOLID", color = list(
-                                                            r = 0, g = 0, b = 0, a = 1))), list(list(blendMode = "NORMAL", 
-                                                                                                     type = "SOLID", color = list(r = 0.992156863212585, g = 0.650980412960052, 
-                                                                                                                                  b = 0.890196084976196, a = 1)))), strokes = list(
-                                                                                                                                    list(list(blendMode = "NORMAL", type = "SOLID", color = list(
-                                                                                                                                      r = 0.966666638851166, g = 0.0563889145851135, b = 0.0563889145851135, 
-                                                                                                                                      a = 1))), NULL, NULL, NULL, NULL, NULL, NULL, NULL), 
-                strokeWeight = c(1, 1, 1, 1, 1, 1, 1, 1), opacity = c(NA, 
-                                                                      NA, NA, NA, 0.889999985694885, NA, NA, NA), style = list(
-                                                                        NULL, list(fontFamily = "Roboto", fontPostScriptName = NULL, 
-                                                                                   fontWeight = 400L, textAutoResize = "HEIGHT", fontSize = 9, 
-                                                                                   textAlignHorizontal = "LEFT", textAlignVertical = "TOP", 
-                                                                                   letterSpacing = 0.36, lineHeightPx = 10.546875, lineHeightPercent = 100, 
-                                                                                   lineHeightUnit = "INTRINSIC_%"), list(fontFamily = "Roboto", 
-                                                                                                                         fontPostScriptName = NULL, fontWeight = 400L, textAutoResize = "HEIGHT", 
-                                                                                                                         fontSize = 11, textAlignHorizontal = "LEFT", textAlignVertical = "TOP", 
-                                                                                                                         letterSpacing = 0.44, lineHeightPx = 12.890625, lineHeightPercent = 100, 
-                                                                                                                         lineHeightUnit = "INTRINSIC_%"), NULL, list(fontFamily = "Roboto", 
-                                                                                                                                                                     fontPostScriptName = NULL, fontWeight = 400L, fontSize = 9, 
-                                                                                                                                                                     textAlignHorizontal = "LEFT", textAlignVertical = "TOP", 
-                                                                                                                                                                     letterSpacing = 0, lineHeightPx = 10.546875, lineHeightPercent = 100, 
-                                                                                                                                                                     lineHeightUnit = "INTRINSIC_%"), list(fontFamily = "Roboto", 
-                                                                                                                                                                                                           fontPostScriptName = NULL, fontWeight = 400L, fontSize = 11, 
-                                                                                                                                                                                                           textAlignHorizontal = "LEFT", textAlignVertical = "TOP", 
-                                                                                                                                                                                                           letterSpacing = 0.44, lineHeightPx = 12.890625, lineHeightPercent = 100, 
-                                                                                                                                                                                                           lineHeightUnit = "INTRINSIC_%"), list(fontFamily = "Roboto", 
-                                                                                                                                                                                                                                                 fontPostScriptName = "Roboto-Light", fontWeight = 300L, 
-                                                                                                                                                                                                                                                 textAutoResize = "HEIGHT", fontSize = 12, textAlignHorizontal = "LEFT", 
-                                                                                                                                                                                                                                                 textAlignVertical = "TOP", letterSpacing = 0.48, 
-                                                                                                                                                                                                                                                 lineHeightPx = 14.0625, lineHeightPercent = 100, 
-                                                                                                                                                                                                                                                 lineHeightUnit = "INTRINSIC_%"), list(fontFamily = "Roboto", 
-                                                                                                                                                                                                                                                                                       fontPostScriptName = "Roboto-Light", fontWeight = 300L, 
-                                                                                                                                                                                                                                                                                       textAutoResize = "WIDTH_AND_HEIGHT", fontSize = 20, 
-                                                                                                                                                                                                                                                                                       textAlignHorizontal = "LEFT", textAlignVertical = "TOP", 
-                                                                                                                                                                                                                                                                                       letterSpacing = 0.8, lineHeightPx = 23.4375, lineHeightPercent = 100, 
-                                                                                                                                                                                                                                                                                       lineHeightUnit = "INTRINSIC_%"))), row.names = c(NA, 
-                                                                                                                                                                                                                                                                                                                                        -8L), class = c("tbl_df", "tbl", "data.frame")))
+  expect_equal(object = tibble_file_content, 
+               expected = structure(list(element_name = c("panel_background", "legend_text", 
+                                                          "legend_title", "panel_grid", "axis_text", "axis_title", "plot_subtitle", 
+                                                          "plot_title"), type = c("VECTOR", "TEXT", "TEXT", "VECTOR", "TEXT", 
+                                                                                  "TEXT", "TEXT", "TEXT"), strokeWeight = c(5, 1, 1, 1, 1, 1, 1, 
+                                                                                                                            1), fontFamily = c(NA, "Roboto", "Roboto", NA, "Roboto", "Roboto", 
+                                                                                                                                               "Roboto", "Roboto"), fontPostScriptName = c(NA, NA, NA, NA, NA, 
+                                                                                                                                                                                           NA, "Roboto-Light", "Roboto-Light"), fontWeight = c(NA, 400L, 
+                                                                                                                                                                                                                                               400L, NA, 400L, 400L, 300L, 300L), textAutoResize = c(NA, "HEIGHT", 
+                                                                                                                                                                                                                                                                                                     "HEIGHT", NA, NA, NA, "HEIGHT", "WIDTH_AND_HEIGHT"), fontSize = c(NA, 
+                                                                                                                                                                                                                                                                                                                                                                       9, 11, NA, 9, 11, 12, 20), textAlignHorizontal = c(NA, "LEFT", 
+                                                                                                                                                                                                                                                                                                                                                                                                                          "LEFT", NA, "LEFT", "LEFT", "LEFT", "LEFT"), textAlignVertical = c(NA, 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             "TOP", "TOP", NA, "TOP", "TOP", "TOP", "BOTTOM"), letterSpacing = c(NA, 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 0.36, 0.44, NA, 0, 0.44, 0.48, 0.8), lineHeightPx = c(NA, 10.546875, 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       12.890625, NA, 10.546875, 12.890625, 14.0625, 23.4375), lineHeightPercent = c(NA, 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     100, 100, NA, 100, 100, 100, 100), lineHeightUnit = c(NA, "INTRINSIC_%", 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           "INTRINSIC_%", NA, "INTRINSIC_%", "INTRINSIC_%", "INTRINSIC_%", 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           "INTRINSIC_%"), fills_blendMode = c("NORMAL", "NORMAL", "NORMAL", 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL"), fills_type = c("SOLID", 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 "SOLID", "SOLID", "SOLID", "SOLID", "SOLID", "SOLID", "SOLID"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ), fills_color = c("#5FBDDEFF", "#000000FF", "#000000FF", "#5FBDDEFF", 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  "#B0B0B0FF", "#000000FF", "#000000FF", "#FDA6E3FF"), strokes_blendMode = c("NORMAL", 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             NA, NA, NA, NA, NA, NA, NA), strokes_type = c("SOLID", NA, NA, 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           NA, NA, NA, NA, NA), strokes_color = c("#000000FF", NA, NA, NA, 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  NA, NA, NA, NA), strokeDashes = c(TRUE, NA, NA, NA, NA, NA, NA, 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    NA)), row.names = c(NA, -8L), class = c("tbl_df", "tbl", "data.frame"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    )))
   
   # end long dput ----
   
@@ -150,249 +193,11 @@ test_that("raw_to_design_tibble() works", {
 
 ```
 
-# Addition of the type of the {ggplot2} elements (i.e. `rect`, `line` or `text`)
-
-- A correspondence table is available in the package:
-```{r echo=FALSE}
-corresp_element_type <- readr::read_rds(
-  system.file("corresp_element_type.rds",
-              package = "swatch"))
-corresp_element_type %>% 
-  head() %>% 
-  knitr::kable()
-```
-
-```{r function-add_ggplot_type}
-#' Add the type of the ggplot2 elements (i.e. "rect", "line" or "text")
-#'
-#' @param .data Tibble. An object returned by \code{swatch::\link{raw_to_design_tibble}()}
-#' 
-#' @importFrom readr read_rds 
-#' @importFrom dplyr left_join mutate case_when filter select everything
-#' @importFrom cli cli_alert_danger
-#'
-#' @return The same tibble with an extra column with the ggplot2 type (i.e. "rect", "line" or "text").
-#' @export
-add_ggplot_type <- function(.data) {
-  
-  corresp_element_type <- read_rds(system.file("corresp_element_type.rds",
-                                               package = "swatch"))
-  joined_data <- .data %>% 
-    left_join(corresp_element_type, 
-              by = "element_name") %>% 
-    mutate(check_type = case_when(
-      type == "VECTOR" & (element_type %in% c("rect", "line")) ~ "ok",
-      type == "TEXT" & element_type == "text" ~ "ok",
-      TRUE ~ "not ok"
-    ))
-  
-  unconsistent_type <- joined_data %>% 
-    filter(check_type == "not ok")
-  
-  if (nrow(unconsistent_type) != 0) {
-    stop(cli_alert_danger("Inconsistent type of the ggplot2 elements. Incoherence between the type returned by Figma and the type specified in ggplot2."))
-  } 
-  
-  joined_data <- joined_data %>% 
-    select(-type, -check_type) %>% 
-    select(element_name, element_type, everything())
-  
-  return(joined_data)
-  
-}
-```
-
-```{r examples-add_ggplot_type}
-data(toy_raw_file_content)
-data_design <- toy_raw_file_content %>% 
-  raw_to_design_tibble()
-data_design %>% 
-  add_ggplot_type()
-```
-
-```{r tests-add_ggplot_type}
-test_that("add_ggplot_type() works", {
-  
-  data(toy_raw_file_content)
-  
-  data_with_type <- toy_raw_file_content %>% 
-    raw_to_design_tibble() %>% 
-    add_ggplot_type()
-
-  # long dput ----
-  expect_equal(object = data_with_type, 
-               expected = structure(list(element_name = c("panel_background", "legend_text", 
-                                                          "legend_title", "panel_grid", "axis_text", "axis_title", "plot_subtitle", 
-                                                          "plot_title"), element_type = c("rect", "text", "text", "line", 
-                                                                                          "text", "text", "text", "text"), fills = list(list(list(blendMode = "NORMAL", 
-                                                                                                                                                  type = "SOLID", color = list(r = 0.372549027204514, g = 0.74117648601532, 
-                                                                                                                                                                               b = 0.87058824300766, a = 1))), list(list(blendMode = "NORMAL", 
-                                                                                                                                                                                                                         type = "SOLID", color = list(r = 0, g = 0, b = 0, a = 1))), 
-                                                                                                                                        list(list(blendMode = "NORMAL", type = "SOLID", color = list(
-                                                                                                                                          r = 0, g = 0, b = 0, a = 1))), list(list(blendMode = "NORMAL", 
-                                                                                                                                                                                   type = "SOLID", color = list(r = 0.372549027204514, g = 0.74117648601532, 
-                                                                                                                                                                                                                b = 0.87058824300766, a = 1))), list(list(blendMode = "NORMAL", 
-                                                                                                                                                                                                                                                          type = "SOLID", color = list(r = 0.690196096897125, g = 0.690196096897125, 
-                                                                                                                                                                                                                                                                                       b = 0.690196096897125, a = 1))), list(list(blendMode = "NORMAL", 
-                                                                                                                                                                                                                                                                                                                                  type = "SOLID", color = list(r = 0, g = 0, b = 0, a = 1))), 
-                                                                                                                                        list(list(blendMode = "NORMAL", type = "SOLID", color = list(
-                                                                                                                                          r = 0, g = 0, b = 0, a = 1))), list(list(blendMode = "NORMAL", 
-                                                                                                                                                                                   type = "SOLID", color = list(r = 0.992156863212585, g = 0.650980412960052, 
-                                                                                                                                                                                                                b = 0.890196084976196, a = 1)))), strokes = list(
-                                                                                                                                                                                                                  list(list(blendMode = "NORMAL", type = "SOLID", color = list(
-                                                                                                                                                                                                                    r = 0.966666638851166, g = 0.0563889145851135, b = 0.0563889145851135, 
-                                                                                                                                                                                                                    a = 1))), NULL, NULL, NULL, NULL, NULL, NULL, NULL), 
-                                         strokeWeight = c(1, 1, 1, 1, 1, 1, 1, 1), opacity = c(NA, 
-                                                                                               NA, NA, NA, 0.889999985694885, NA, NA, NA), style = list(
-                                                                                                 NULL, list(fontFamily = "Roboto", fontPostScriptName = NULL, 
-                                                                                                            fontWeight = 400L, textAutoResize = "HEIGHT", fontSize = 9, 
-                                                                                                            textAlignHorizontal = "LEFT", textAlignVertical = "TOP", 
-                                                                                                            letterSpacing = 0.36, lineHeightPx = 10.546875, lineHeightPercent = 100, 
-                                                                                                            lineHeightUnit = "INTRINSIC_%"), list(fontFamily = "Roboto", 
-                                                                                                                                                  fontPostScriptName = NULL, fontWeight = 400L, textAutoResize = "HEIGHT", 
-                                                                                                                                                  fontSize = 11, textAlignHorizontal = "LEFT", textAlignVertical = "TOP", 
-                                                                                                                                                  letterSpacing = 0.44, lineHeightPx = 12.890625, lineHeightPercent = 100, 
-                                                                                                                                                  lineHeightUnit = "INTRINSIC_%"), NULL, list(fontFamily = "Roboto", 
-                                                                                                                                                                                              fontPostScriptName = NULL, fontWeight = 400L, fontSize = 9, 
-                                                                                                                                                                                              textAlignHorizontal = "LEFT", textAlignVertical = "TOP", 
-                                                                                                                                                                                              letterSpacing = 0, lineHeightPx = 10.546875, lineHeightPercent = 100, 
-                                                                                                                                                                                              lineHeightUnit = "INTRINSIC_%"), list(fontFamily = "Roboto", 
-                                                                                                                                                                                                                                    fontPostScriptName = NULL, fontWeight = 400L, fontSize = 11, 
-                                                                                                                                                                                                                                    textAlignHorizontal = "LEFT", textAlignVertical = "TOP", 
-                                                                                                                                                                                                                                    letterSpacing = 0.44, lineHeightPx = 12.890625, lineHeightPercent = 100, 
-                                                                                                                                                                                                                                    lineHeightUnit = "INTRINSIC_%"), list(fontFamily = "Roboto", 
-                                                                                                                                                                                                                                                                          fontPostScriptName = "Roboto-Light", fontWeight = 300L, 
-                                                                                                                                                                                                                                                                          textAutoResize = "HEIGHT", fontSize = 12, textAlignHorizontal = "LEFT", 
-                                                                                                                                                                                                                                                                          textAlignVertical = "TOP", letterSpacing = 0.48, 
-                                                                                                                                                                                                                                                                          lineHeightPx = 14.0625, lineHeightPercent = 100, 
-                                                                                                                                                                                                                                                                          lineHeightUnit = "INTRINSIC_%"), list(fontFamily = "Roboto", 
-                                                                                                                                                                                                                                                                                                                fontPostScriptName = "Roboto-Light", fontWeight = 300L, 
-                                                                                                                                                                                                                                                                                                                textAutoResize = "WIDTH_AND_HEIGHT", fontSize = 20, 
-                                                                                                                                                                                                                                                                                                                textAlignHorizontal = "LEFT", textAlignVertical = "TOP", 
-                                                                                                                                                                                                                                                                                                                letterSpacing = 0.8, lineHeightPx = 23.4375, lineHeightPercent = 100, 
-                                                                                                                                                                                                                                                                                                                lineHeightUnit = "INTRINSIC_%"))), row.names = c(NA, 
-                                                                                                                                                                                                                                                                                                                                                                 -8L), class = c("tbl_df", "tbl", "data.frame")))
-  # end of long dput ----
-  
-  
-  
-  data_with_error_type <- toy_raw_file_content %>% 
-    raw_to_design_tibble() %>% 
-    dplyr::mutate(type = dplyr::case_when(
-      element_name == "panel_background" ~ "TEXT",
-      TRUE ~ element_name
-    ))
-  
-  expect_error(data_with_error_type %>% add_ggplot_type())
-    
-})
-```
-
-# Extraction of the {ggplot2} design content of a file: `get_ggplot_element_design()` function
-
-```{r function-get_ggplot_element_design}
-# #' Extract the {ggplot2} design content of a file.
-# #'
-# #' @param ggplot_element Character. Name of the {ggplot2} element, as defined in \link[ggplot2]{theme}.
-# #' @param file_content List. Content of the Figma file, as returned by \link[swatch]{get_file_content}.
-# #'
-# #' @importFrom purrr map_chr
-# #' @importFrom grDevices rgb
-# #' @importFrom grDevices rgb
-# #' 
-# #' @return List. The {ggplot2} element properties.
-# #' @export
-# get_ggplot_element_design <- function(ggplot_element, file_content) {
-#   
-#   # Find info about elements ids and names in Figma
-#   main_components_names <- file_content$components %>% 
-#     map_chr(~ .x$name)
-#   
-#   sub_components_id <- file_content$document$children[[1]]$children %>% 
-#     map_chr(~ .x$id)
-#   
-#   # Find the id of the ggplot2 element
-#   element_id <- names(main_components_names[main_components_names == ggplot_element])
-# 
-#   # Extract the desing content of the ggplot2 element
-#   element_design <- file_content$document$children[[1]]$children[[which(sub_components_id == element_id)]]
-# 
-#   # Construct a list with the desing elements
-#   list_element_design <- list()
-# 
-#   if (ggplot_element == "panel_background") {
-#     
-#     # Fill color
-#     list_element_design[[length(list_element_design) + 1]] <- rgb(element_design$backgroundColor$r, 
-#                                                                   element_design$backgroundColor$g,
-#                                                                   element_design$backgroundColor$b,
-#                                                                   maxColorValue = 1)
-#     names(list_element_design)[[length(list_element_design)]] <- "fill_color"
-#     
-#     # Fill opacity
-#     list_element_design[[length(list_element_design) + 1]] <- element_design$backgroundColor$a
-#     names(list_element_design)[[length(list_element_design)]] <- "fill_opacity"
-#     
-#   }
-#   
-#   if (ggplot_element %in% c("panel_background", "panel_grid")) {
-#     
-#     # Stroke color
-#     list_element_design[[length(list_element_design) + 1]] <- rgb(element_design$strokes[[1]]$color$r, 
-#                                                                   element_design$strokes[[1]]$color$g,
-#                                                                   element_design$strokes[[1]]$color$b,
-#                                                                   maxColorValue = 1)
-#     names(list_element_design)[[length(list_element_design)]] <- "stroke_color"
-#     
-#     # Stroke opacity
-#     list_element_design[[length(list_element_design) + 1]] <- element_design$strokes[[1]]$color$a
-#     names(list_element_design)[[length(list_element_design)]] <- "stroke_opacity"
-#     
-#     # Stroke weight
-#     list_element_design[[length(list_element_design) + 1]] <- element_design$strokeWeigh
-#     names(list_element_design)[[length(list_element_design)]] <- "stroke_weight"
-#     
-#   }
-#   
-#   return(list_element_design)
-#   
-# }
-```
-
-```{r examples-get_ggplot_element_design}
-# file_content <- get_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
-#                                  acess_token = Sys.getenv("FIGMA_TOKEN"))
-# 
-# get_ggplot_element_design(ggplot_element = "panel_background",
-#                           file_content = file_content)
-# 
-# get_ggplot_element_design(ggplot_element = "panel_grid",
-#                           file_content = file_content)
-```
-
-```{r tests-get_ggplot_element_design}
-# test_that("get_file_content() works", {
-# 
-#   file_content <- get_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
-#                                  acess_token = Sys.getenv("FIGMA_TOKEN"))
-#   
-#   expect_equal(object = get_ggplot_element_design(ggplot_element = "panel_background", 
-#                                                   file_content = file_content), 
-#                expected = list(fill_color = "#5FBDDE", 
-#                                fill_opacity = 0.600000023841858, 
-#                                stroke_color = "#D29F9F", 
-#                                stroke_opacity = 1, 
-#                                stroke_weight = 4)
-#   )
-#  
-# })
-```
-
 ```{r development-inflate, eval=FALSE}
 # Run but keep eval=FALSE to avoid infinite loop
 # Execute in the console directly
 fusen::inflate(flat_file = "dev/flat_figma_design_extraction.Rmd", 
-               vignette_name = "c - {ggplot2} elements extraction from the Figma file", 
+               vignette_name = "c - Design elements extraction from the Figma file", 
                open_vignette = FALSE,
                check = FALSE,
                overwrite = TRUE)
