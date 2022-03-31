@@ -2,6 +2,7 @@
 
 export("%>%")
 export(add_ggplot_theme_type)
+export(create_theme_fun)
 export(determine_ggplot_theme_elements)
 export(extract_ggplot_theme)
 export(get_figma_file_content)

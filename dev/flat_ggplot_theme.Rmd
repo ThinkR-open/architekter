@@ -1,0 +1,115 @@
+---
+title: "flat_ggplot_theme.Rmd empty"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r development, include=FALSE}
+library(testthat)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r development-1}
+# Load already included functions
+pkgload::load_all(export_all = FALSE)
+```
+
+# Create a theme functions by using the {ggplot2} elements extracted from the Figma file
+
+```{r function-create_theme_fun}
+#' Create a theme functions by using the {ggplot2} elements extracted from the Figma file
+#'
+#' @param .data Tibble. {ggplot2} elements as created by \code{architekter::\link{extract_ggplot_theme}()}
+#'
+#' @return A {ggplot2} theme function.
+#' @export
+create_theme_fun <- function(.data) {
+  
+  function() {
+    theme(
+      panel.background = element_rect(
+        size = .data %>% filter(element_name == "panel_background") %>% pull(size),
+        color = .data %>% filter(element_name == "panel_background") %>% pull(color),
+        fill = .data %>% filter(element_name == "panel_background") %>% pull(fill),
+        linetype = .data %>% filter(element_name == "panel_background") %>% pull(linetype)
+      ),
+      panel.grid = element_line(
+        size = .data %>% filter(element_name == "panel_grid") %>% pull(size),
+        color = .data %>% filter(element_name == "panel_grid") %>% pull(color),
+        linetype = .data %>% filter(element_name == "panel_grid") %>% pull(linetype)
+      ),
+      plot.title = element_text(
+        lineheight = .data %>% filter(element_name == "plot_title") %>% pull(lineheight),
+        family = .data %>% filter(element_name == "plot_title") %>% pull(family),
+        size = .data %>% filter(element_name == "plot_title") %>% pull(size),
+        color = .data %>% filter(element_name == "plot_title") %>% pull(color),
+      ),
+      plot.subtitle = element_text(
+        lineheight = .data %>% filter(element_name == "plot_subtitle") %>% pull(lineheight),
+        family = .data %>% filter(element_name == "plot_subtitle") %>% pull(family),
+        size = .data %>% filter(element_name == "plot_subtitle") %>% pull(size),
+        color = .data %>% filter(element_name == "plot_subtitle") %>% pull(color),
+      ),
+      legend.title = element_text(
+        lineheight = .data %>% filter(element_name == "legend_title") %>% pull(lineheight),
+        family = .data %>% filter(element_name == "legend_title") %>% pull(family),
+        size = .data %>% filter(element_name == "legend_title") %>% pull(size),
+        color = .data %>% filter(element_name == "legend_title") %>% pull(color),
+      ),
+      legend.text = element_text(
+        lineheight = .data %>% filter(element_name == "legend_text") %>% pull(lineheight),
+        family = .data %>% filter(element_name == "legend_text") %>% pull(family),
+        size = .data %>% filter(element_name == "legend_text") %>% pull(size),
+        color = .data %>% filter(element_name == "legend_text") %>% pull(color),
+      ),
+      axis.title = element_text(
+        lineheight = .data %>% filter(element_name == "axis_title") %>% pull(lineheight),
+        family = .data %>% filter(element_name == "axis_title") %>% pull(family),
+        size = .data %>% filter(element_name == "axis_title") %>% pull(size),
+        color = .data %>% filter(element_name == "axis_title") %>% pull(color),
+      ),
+      axis.text = element_text(
+        lineheight = .data %>% filter(element_name == "axis_text") %>% pull(lineheight),
+        family = .data %>% filter(element_name == "axis_text") %>% pull(family),
+        size = .data %>% filter(element_name == "axis_text") %>% pull(size),
+        color = .data %>% filter(element_name == "axis_text") %>% pull(color),
+      )
+    )
+  }
+  
+}
+```
+
+```{r examples-create_theme_fun}
+data(toy_raw_file_content)
+
+data_theme_elements <- toy_raw_file_content %>% 
+  extract_ggplot_theme()
+
+my_theme <- create_theme_fun(.data = data_theme_elements)
+  
+ggplot(data = iris) + 
+  aes(x = Sepal.Length, y = Sepal.Width) + 
+  geom_point() + 
+  my_theme()
+```
+
+```{r tests-create_theme_fun}
+test_that("create_theme_fun works", {
+
+})
+```
+
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(flat_file = "dev/flat_ggplot_theme.Rmd", 
+               vignette_name = "e - Create the {ggplot2} theme function",
+               open_vignette = FALSE,
+               check = FALSE,
+               overwrite = TRUE)
+```
+

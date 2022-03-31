@@ -80,6 +80,7 @@ determine_ggplot_theme_elements <- function(.data) {
         mutate(
           linetype = case_when(
             element_type %in% c("rect", "line") & strokeDashes == TRUE ~ 3,
+            element_type %in% c("rect", "line") & is.na(strokeDashes) ~ 0,
             TRUE ~ NA_real_
           )
         ) %>% 
