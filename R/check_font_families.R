@@ -7,7 +7,7 @@
 #' @importFrom sysfonts font_files
 #' @importFrom dplyr filter distinct pull left_join mutate case_when select
 #' @importFrom cli cli_alert_danger
-#' @importFrom glue glue
+#' @importFrom glue glue glue_collapse
 #' 
 #' @return A tibble with the correct font family. And a message if one of the fonts is missing.
 #' 
