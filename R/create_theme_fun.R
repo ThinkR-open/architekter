@@ -2,7 +2,7 @@
 
 #' Create a theme functions by using the {ggplot2} elements extracted from the Figma file
 #'
-#' @param .data Tibble. {ggplot2} elements as created by \code{architekter::\link{extract_ggplot_theme}()}
+#' @param .data Tibble. {ggplot2} elements as created by \code{architekter::\link{get_figma_file_content}()}
 #' 
 #' @importFrom ggplot2 theme element_rect element_line element_text
 #' @importFrom dplyr filter pull
@@ -16,7 +16,6 @@
 #' library(ggplot2)
 #' 
 #' my_theme <- toy_raw_file_content %>% 
-#'   extract_ggplot_theme() %>% 
 #'   create_theme_fun()
 #' 
 #' \dontrun{
@@ -32,6 +31,15 @@
 #' }
 create_theme_fun <- function(.data) {
   
+  #_ Extract ggplot theme
+  .data <- .data %>% 
+    extract_ggplot_theme()
+    
+  #_ Check fonts
+  .data <- .data %>% 
+    check_font_families()
+  
+  #_ Create the theme function
   ad_hoc_theme_fun <- function(...) {
     theme(
       panel.background = element_rect(

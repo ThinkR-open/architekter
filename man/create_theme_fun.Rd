@@ -7,7 +7,7 @@
 create_theme_fun(.data)
 }
 \arguments{
-\item{.data}{Tibble. {ggplot2} elements as created by \code{architekter::\link{extract_ggplot_theme}()}}
+\item{.data}{Tibble. {ggplot2} elements as created by \code{architekter::\link{get_figma_file_content}()}}
 }
 \value{
 A {ggplot2} theme function.
@@ -21,7 +21,6 @@ data(toy_raw_file_content)
 library(ggplot2)
 
 my_theme <- toy_raw_file_content \%>\% 
-  extract_ggplot_theme() \%>\% 
   create_theme_fun()
 
 \dontrun{

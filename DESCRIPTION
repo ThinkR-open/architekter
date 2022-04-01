@@ -23,6 +23,7 @@ Imports:
     purrr,
     readr,
     stringr,
+    sysfonts,
     tibble,
     tidyr
 Suggests: 

@@ -25,9 +25,10 @@ library(architekter)
 ```{r out.width = '100%'}
 library(ggplot2)
 
-my_awesome_theme <- get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
-                                  acess_token = Sys.getenv("FIGMA_TOKEN")) %>%
-  extract_ggplot_theme() %>% 
+my_awesome_theme <- get_figma_file_content(
+  file_key = "wRqIvMmymzSPuj0sEhnORb",
+  acess_token = Sys.getenv("FIGMA_TOKEN")
+  ) %>%
   create_theme_fun()
 
 # Toy plot 1
@@ -85,6 +86,23 @@ ggplot(data = iris) +
 
 # Details of the functions
 
+## Determine if the required font families are present on the system
+
+  
+
+```{r example-check_font_families}
+data(toy_raw_file_content)
+
+toy_raw_file_content %>% 
+  extract_ggplot_theme() %>% 
+  check_font_families()
+```
+
+  
+
+  
+
+
 ## Create a theme function by using the {ggplot2} elements extracted from the Figma file
 
 ```{r examples-create_theme_fun}
@@ -93,7 +111,6 @@ data(toy_raw_file_content)
 library(ggplot2)
 
 my_theme <- toy_raw_file_content %>% 
-  extract_ggplot_theme() %>% 
   create_theme_fun()
 
 #' \dontrun{

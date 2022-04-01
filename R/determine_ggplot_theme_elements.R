@@ -21,9 +21,14 @@ determine_ggplot_theme_elements <- function(.data) {
   data_ggplot_theme_elements <- .data %>%
     # _family
     mutate(
-      family = case_when(
-        !is.na(fontPostScriptName) ~ fontPostScriptName,
+      font_family = case_when(
         !is.na(fontFamily) ~ fontFamily,
+        TRUE ~ NA_character_
+      )
+    ) %>% 
+    mutate(
+      font_ps_name = case_when(
+        !is.na(fontPostScriptName) ~ fontPostScriptName,
         TRUE ~ NA_character_
       )
     ) %>% 

@@ -78,39 +78,36 @@ Sys.setenv(FIGMA_TOKEN = "your-token-here")
 
 -   Restart your R session
 
--   Load `{architekter}`
+-   Load `{architekter}`:
 
 ``` r
 library(architekter)
 ```
 
--   Extract the {ggplot2} theme elements from your Figma file:
+-   Extract the {ggplot2} theme from your Figma file:
 
 ``` r
-get_figma_file_content(file_key = "your-file-key",
-                       acess_token = Sys.getenv("FIGMA_TOKEN")) %>% 
-extract_ggplot_theme()
+my_awesome_theme <- get_figma_file_content(
+  file_key = "wRqIvMmymzSPuj0sEhnORb",
+  acess_token = Sys.getenv("FIGMA_TOKEN")
+  ) %>%
+  create_theme_fun()
 ```
 
-#### Example
+-   Use the {ggplot2} theme:
 
 ``` r
-get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
-                       acess_token = Sys.getenv("FIGMA_TOKEN")) %>% 
-extract_ggplot_theme()
-#> ✓ Content of the file 'ggplot2 templating' has been successfully extracted.
-#> ✓ The raw Figma content has been successfully transformed to a tibble.
-#> ✓ The ggplot2 theme elements have been extracted.
-#> # A tibble: 8 × 10
-#>   element_name  element_type letter_spacing lineheight family   size hjust color
-#>   <chr>         <chr>                 <dbl>      <dbl> <chr>   <dbl> <dbl> <chr>
-#> 1 panel_backgr… rect                  NA          NA   <NA>    0.400    NA #000…
-#> 2 legend_text   text                   0.36       10.5 Roboto  9         1 #000…
-#> 3 legend_title  text                   0.44       12.9 Roboto 11         1 #000…
-#> 4 panel_grid    line                  NA          NA   <NA>    1        NA #5FB…
-#> 5 axis_text     text                   0          10.5 Roboto  9         1 #B0B…
-#> 6 axis_title    text                   0.44       12.9 Roboto 11         1 #000…
-#> 7 plot_subtitle text                   0.48       14.1 Robot… 12         1 #000…
-#> 8 plot_title    text                   0.8        23.4 Robot… 20         0 #000…
-#> # … with 2 more variables: fill <chr>, linetype <dbl>
+library(ggplot2)
+
+ggplot(data = iris) + 
+  aes(x = Sepal.Width, fill = Species) + 
+  geom_density() + 
+  labs(title = "Sepal width of several species of iris",
+       subtitle = "This plot respects the graphic design system defined in Figma",
+       x = "Sepal width",
+       y = "Density", 
+       color = "Iris species") +
+  my_awesome_theme()
 ```
+
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
