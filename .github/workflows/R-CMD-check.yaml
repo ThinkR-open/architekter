@@ -31,14 +31,13 @@ jobs:
 
     steps:
 
-      - name: Install fonts
-        run: |
-          install.packages("remotes", repos = "https://cran.rstudio.com/")
-          remotes::install_local(force = TRUE)
-          install.packages("showtext", repos = "https://cran.rstudio.com/")
-          sysfonts::font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
-          sysfonts::font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
-        shell: Rscript {0}
+      # - name: Install fonts
+      #   run: |
+      #     install.packages("remotes", repos = "https://cran.rstudio.com/")
+      #     remotes::install_local(force = TRUE)
+      #     sysfonts::font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+      #     sysfonts::font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
+      #   shell: Rscript {0}
 
       - uses: actions/checkout@v2
 
