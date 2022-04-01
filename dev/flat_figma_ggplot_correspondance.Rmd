@@ -203,7 +203,7 @@ determine_ggplot_theme_elements <- function(.data) {
     # _color
     mutate(
       color = case_when(
-        element_type == "rect" ~ strokes_color,
+        element_type %in% c("rect", "line") ~ strokes_color,
         TRUE ~ fills_color
       )
     ) %>% 
@@ -219,8 +219,9 @@ determine_ggplot_theme_elements <- function(.data) {
       data_ggplot_theme_elements <- data_ggplot_theme_elements %>% 
         mutate(
           linetype = case_when(
-            element_type %in% c("rect", "line") & strokeDashes == TRUE ~ 3,
-            TRUE ~ NA_real_
+            element_type %in% c("rect", "line") & strokeDashes == TRUE ~ "dashed",
+            element_type %in% c("rect", "line") & is.na(strokeDashes) ~ "solid",
+            TRUE ~ NA_character_
           )
         ) %>% 
         select(-strokeDashes, -strokes_type, -fills_type)
@@ -228,8 +229,8 @@ determine_ggplot_theme_elements <- function(.data) {
       data_ggplot_theme_elements <- data_ggplot_theme_elements %>% 
         mutate(
           linetype = case_when(
-            element_type %in% c("rect", "line") == TRUE ~ 0,
-            TRUE ~ NA_real_
+            element_type %in% c("rect", "line") == TRUE ~ "solid",
+            TRUE ~ NA_character_
           )
         ) %>% 
         select(-strokes_type, -fills_type)
@@ -272,10 +273,10 @@ test_that("determine_ggplot_theme_elements works", {
                                                                                                                                                                                                                                                                "Roboto", "Roboto", NA, "Roboto", "Roboto", "Roboto-Light", "Roboto-Light"
                                                                                                                                                                                             ), size = c(5, 9, 11, 1, 9, 11, 12, 20), hjust = c(NA, 1, 1, 
                                                                                                                                                                                                                                                NA, 1, 1, 1, 0), color = c("#000000FF", "#000000FF", "#000000FF", 
-                                                                                                                                                                                                                                                                          "#5FBDDEFF", "#B0B0B0FF", "#000000FF", "#000000FF", "#FDA6E3FF"
-                                                                                                                                                                                                                                               ), fill = c("#5FBDDEFF", NA, NA, NA, NA, NA, NA, NA), linetype = c(3, 
-                                                                                                                                                                                                                                                                                                                  NA, NA, NA, NA, NA, NA, NA)), row.names = c(NA, -8L), class = c("tbl_df", 
-                                                                                                                                                                                                                                                                                                                                                                                  "tbl", "data.frame")))
+                                                                                                                                                                                                                                                                          NA, "#B0B0B0FF", "#000000FF", "#000000FF", "#FDA6E3FF"), fill = c("#5FBDDEFF", 
+                                                                                                                                                                                                                                                                                                                                            NA, NA, NA, NA, NA, NA, NA), linetype = c("dashed", NA, NA, "solid", 
+                                                                                                                                                                                                                                                                                                                                                                                      NA, NA, NA, NA)), row.names = c(NA, -8L), class = c("tbl_df", 
+                                                                                                                                                                                                                                                                                                                                                                                                                                          "tbl", "data.frame")))
 
   # end of long dput ----
   
@@ -334,10 +335,10 @@ test_that("extract_ggplot_theme works", {
                                                                                                                                                                                                                                                                "Roboto", "Roboto", NA, "Roboto", "Roboto", "Roboto-Light", "Roboto-Light"
                                                                                                                                                                                             ), size = c(5, 9, 11, 1, 9, 11, 12, 20), hjust = c(NA, 1, 1, 
                                                                                                                                                                                                                                                NA, 1, 1, 1, 0), color = c("#000000FF", "#000000FF", "#000000FF", 
-                                                                                                                                                                                                                                                                          "#5FBDDEFF", "#B0B0B0FF", "#000000FF", "#000000FF", "#FDA6E3FF"
-                                                                                                                                                                                                                                               ), fill = c("#5FBDDEFF", NA, NA, NA, NA, NA, NA, NA), linetype = c(3, 
-                                                                                                                                                                                                                                                                                                                  NA, NA, NA, NA, NA, NA, NA)), row.names = c(NA, -8L), class = c("tbl_df", 
-                                                                                                                                                                                                                                                                                                                                                                                  "tbl", "data.frame")))
+                                                                                                                                                                                                                                                                          NA, "#B0B0B0FF", "#000000FF", "#000000FF", "#FDA6E3FF"), fill = c("#5FBDDEFF", 
+                                                                                                                                                                                                                                                                                                                                            NA, NA, NA, NA, NA, NA, NA), linetype = c("dashed", NA, NA, "solid", 
+                                                                                                                                                                                                                                                                                                                                                                                      NA, NA, NA, NA)), row.names = c(NA, -8L), class = c("tbl_df", 
+                                                                                                                                                                                                                                                                                                                                                                                                                                          "tbl", "data.frame")))
 
   # end of long dput ----
   
@@ -353,7 +354,7 @@ test_that("extract_ggplot_theme works", {
 # Run but keep eval=FALSE to avoid infinite loop
 # Execute in the console directly
 fusen::inflate(flat_file = "dev/flat_figma_ggplot_correspondance.Rmd", 
-               vignette_name = "d - Extract the {ggplot2} theme from a Figma file", 
+               vignette_name = "d - Extract the {ggplot2} theme elements from a Figma file", 
                open_vignette = FALSE,
                check = FALSE,
                overwrite = TRUE)

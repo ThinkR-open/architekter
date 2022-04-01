@@ -1,8 +1,8 @@
 ---
-title: "d - Extract the {ggplot2} theme from a Figma file"
+title: "d - Extract the {ggplot2} theme elements from a Figma file"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{d - Extract the {ggplot2} theme from a Figma file}
+  %\VignetteIndexEntry{d - Extract the {ggplot2} theme elements from a Figma file}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

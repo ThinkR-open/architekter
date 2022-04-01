@@ -6,5 +6,6 @@ globalVariables(c("check_type", "element_name", "element_type", "fills",
                   "lineHeightPercent", "lineHeightPx", "lineHeightUnit",
                   "raw_list", "strokeDashes", "strokes_blendMode", "strokes_color",
                   "strokes_type", "textAlignHorizontal", "textAlignVertical",
-                  "textAutoResize")
+                  "textAutoResize",
+                  "color", "family", "fill", "lineheight", "linetype", "size")
 )

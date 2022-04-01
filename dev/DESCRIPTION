@@ -1,0 +1,12 @@
+Package: dev
+Title: {{ Title }}
+Version: 1.0.0
+Authors@R: 
+    person("Jo", "Doe", , "jodoe@dom.ain", role = c("aut", "cre"))
+Maintainer: {{ Maintainer }}
+Description: {{ Description }}
+License: {{ License }}
+URL: {{ URL }}
+BugReports: {{ BugReports }}
+Encoding: UTF-8
+RoxygenNote: 7.1.2
