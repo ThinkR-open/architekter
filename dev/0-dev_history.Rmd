@@ -16,7 +16,7 @@ All commands that you use to use when developing packages...
 fusen::fill_description(
   pkg = here::here(),
   fields = list(
-    Title = "Build A {ggplot} Maquette From Figma File",
+    Title = "Build A {ggplot} Maquette from Figma File",
     Description = "Use a Figma file -a free online UI/UX design tool- to build a theme for your graphics created with {ggplot2}. Create a theme, palettes and scale functions easily.",
     `Authors@R` = c(
       person("Margot", "Brard", email = "margot@thinkr.fr", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6754-0659")),

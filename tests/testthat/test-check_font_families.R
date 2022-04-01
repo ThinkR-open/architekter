@@ -3,7 +3,7 @@
 test_that("check_font_families works", {
 
   data(toy_raw_file_content)
-  
+
   result_ggplot_theme <- toy_raw_file_content %>% extract_ggplot_theme()
   
   expect_message(object = result_ggplot_theme %>% check_font_families(),

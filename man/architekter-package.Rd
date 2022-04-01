@@ -4,7 +4,7 @@
 \name{architekter-package}
 \alias{architekter}
 \alias{architekter-package}
-\title{architekter: Build A {ggplot} Maquette From Figma File}
+\title{architekter: Build a {ggplot} Maquette from Figma File}
 \description{
 Use a Figma file -a free online UI/UX design tool- to build a theme for your graphics created with {ggplot2}. Create a theme, palettes and scale functions easily.
 }
