@@ -2,4 +2,12 @@
 
 test_that("create_theme_fun works", {
 
+  data(toy_raw_file_content)
+
+  my_theme <- toy_raw_file_content %>% 
+    extract_ggplot_theme() %>% 
+    create_theme_fun()
+  
+  expect_true(inherits(my_theme, "function"))
+  
 })

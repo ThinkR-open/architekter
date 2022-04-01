@@ -18,13 +18,21 @@ Create a theme functions by using the {ggplot2} elements extracted from the Figm
 \examples{
 data(toy_raw_file_content)
 
-data_theme_elements <- toy_raw_file_content \%>\% 
-  extract_ggplot_theme()
+library(ggplot2)
 
-my_theme <- create_theme_fun(.data = data_theme_elements)
-  
+my_theme <- toy_raw_file_content \%>\% 
+  extract_ggplot_theme() \%>\% 
+  create_theme_fun()
+
+\dontrun{
 ggplot(data = iris) + 
-  aes(x = Sepal.Length, y = Sepal.Width) + 
-  geom_point() + 
+  aes(x = Sepal.Width, fill = Species) + 
+  geom_density() + 
+  labs(title = "Sepal width of several species of iris",
+       subtitle = "This plot respects the graphic design system defined in Figma",
+       x = "Sepal width",
+       y = "Density", 
+       color = "Species") +
   my_theme()
+}
 }

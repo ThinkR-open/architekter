@@ -3,24 +3,36 @@
 #' Create a theme functions by using the {ggplot2} elements extracted from the Figma file
 #'
 #' @param .data Tibble. {ggplot2} elements as created by \code{architekter::\link{extract_ggplot_theme}()}
+#' 
+#' @importFrom ggplot2 theme element_rect element_line element_text
+#' @importFrom dplyr filter pull
+#' @importFrom cli cli_alert_success
 #'
 #' @return A {ggplot2} theme function.
 #' @export
 #' @examples
 #' data(toy_raw_file_content)
 #' 
-#' data_theme_elements <- toy_raw_file_content %>% 
-#'   extract_ggplot_theme()
+#' library(ggplot2)
 #' 
-#' my_theme <- create_theme_fun(.data = data_theme_elements)
-#'   
+#' my_theme <- toy_raw_file_content %>% 
+#'   extract_ggplot_theme() %>% 
+#'   create_theme_fun()
+#' 
+#' \dontrun{
 #' ggplot(data = iris) + 
-#'   aes(x = Sepal.Length, y = Sepal.Width) + 
-#'   geom_point() + 
+#'   aes(x = Sepal.Width, fill = Species) + 
+#'   geom_density() + 
+#'   labs(title = "Sepal width of several species of iris",
+#'        subtitle = "This plot respects the graphic design system defined in Figma",
+#'        x = "Sepal width",
+#'        y = "Density", 
+#'        color = "Species") +
 #'   my_theme()
+#' }
 create_theme_fun <- function(.data) {
   
-  function() {
+  ad_hoc_theme_fun <- function(...) {
     theme(
       panel.background = element_rect(
         size = .data %>% filter(element_name == "panel_background") %>% pull(size),
@@ -28,7 +40,12 @@ create_theme_fun <- function(.data) {
         fill = .data %>% filter(element_name == "panel_background") %>% pull(fill),
         linetype = .data %>% filter(element_name == "panel_background") %>% pull(linetype)
       ),
-      panel.grid = element_line(
+      panel.grid.major = element_line(
+        size = .data %>% filter(element_name == "panel_grid") %>% pull(size),
+        color = .data %>% filter(element_name == "panel_grid") %>% pull(color),
+        linetype = .data %>% filter(element_name == "panel_grid") %>% pull(linetype)
+      ),
+      panel.grid.minor = element_line(
         size = .data %>% filter(element_name == "panel_grid") %>% pull(size),
         color = .data %>% filter(element_name == "panel_grid") %>% pull(color),
         linetype = .data %>% filter(element_name == "panel_grid") %>% pull(linetype)
@@ -68,8 +85,12 @@ create_theme_fun <- function(.data) {
         family = .data %>% filter(element_name == "axis_text") %>% pull(family),
         size = .data %>% filter(element_name == "axis_text") %>% pull(size),
         color = .data %>% filter(element_name == "axis_text") %>% pull(color),
-      )
+      ),
+      ...
     )
   }
   
+  cli_alert_success("The theme() function has been created.")
+  
+  return(ad_hoc_theme_fun)
 }

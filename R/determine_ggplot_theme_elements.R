@@ -63,7 +63,7 @@ determine_ggplot_theme_elements <- function(.data) {
     # _color
     mutate(
       color = case_when(
-        element_type == "rect" ~ strokes_color,
+        element_type %in% c("rect", "line") ~ strokes_color,
         TRUE ~ fills_color
       )
     ) %>% 
@@ -79,9 +79,9 @@ determine_ggplot_theme_elements <- function(.data) {
       data_ggplot_theme_elements <- data_ggplot_theme_elements %>% 
         mutate(
           linetype = case_when(
-            element_type %in% c("rect", "line") & strokeDashes == TRUE ~ 3,
-            element_type %in% c("rect", "line") & is.na(strokeDashes) ~ 0,
-            TRUE ~ NA_real_
+            element_type %in% c("rect", "line") & strokeDashes == TRUE ~ "dashed",
+            element_type %in% c("rect", "line") & is.na(strokeDashes) ~ "solid",
+            TRUE ~ NA_character_
           )
         ) %>% 
         select(-strokeDashes, -strokes_type, -fills_type)
@@ -89,8 +89,8 @@ determine_ggplot_theme_elements <- function(.data) {
       data_ggplot_theme_elements <- data_ggplot_theme_elements %>% 
         mutate(
           linetype = case_when(
-            element_type %in% c("rect", "line") == TRUE ~ 0,
-            TRUE ~ NA_real_
+            element_type %in% c("rect", "line") == TRUE ~ "solid",
+            TRUE ~ NA_character_
           )
         ) %>% 
         select(-strokes_type, -fills_type)
