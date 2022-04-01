@@ -33,11 +33,13 @@ jobs:
 
       - name: Install fonts
         run: |
-          install.packages(c("showtext", "remotes"))
+          install.packages("remotes")
           install_local(force = TRUE)
+          install.packages("showtext")
           font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
           font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
           showtext_auto()
+        shell: Rscript {0}
 
       - uses: actions/checkout@v2
 
