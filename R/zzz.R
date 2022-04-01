@@ -8,5 +8,5 @@ globalVariables(c("check_type", "element_name", "element_type", "fills",
                   "strokes_type", "textAlignHorizontal", "textAlignVertical",
                   "textAutoResize",
                   "color", "family", "fill", "lineheight", "linetype", "size",
-                  "check_font", "font_family", "font_ps_name", "font_to_install", "ps_name")
+                  "check_font", "font_family", "font_ps_name", "font_to_install", "ps_name", "name")
 )

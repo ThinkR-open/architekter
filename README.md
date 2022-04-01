@@ -96,6 +96,11 @@ my_awesome_theme <- get_figma_file_content(
 
 -   Use the {ggplot2} theme:
 
+<!-- -->
+
+    #> Loading required package: sysfonts
+    #> Loading required package: showtextdb
+
 ``` r
 library(ggplot2)
 
@@ -110,4 +115,4 @@ ggplot(data = iris) +
   my_awesome_theme()
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />

@@ -4,7 +4,7 @@
 #' 
 #' @param .data Tibble. {ggplot2} elements as created by \code{architekter::\link{extract_ggplot_theme}()}
 #' 
-#' @importFrom sysfonts font_files
+#' @importFrom systemfonts system_fonts
 #' @importFrom dplyr filter distinct pull left_join mutate case_when select
 #' @importFrom cli cli_alert_danger
 #' @importFrom glue glue glue_collapse
@@ -21,7 +21,10 @@
 check_font_families <- function(.data){
 
   #_ extract available fonts on the system
-  available_fonts <- font_files() %>% 
+  available_fonts <- system_fonts() %>% 
+    select(name, family, style) %>% 
+    rename(ps_name = name) %>% 
+    mutate(family = paste(family, style)) %>% 
     select(ps_name, family)
   
   #_ replace the ps_name with the family
@@ -55,7 +58,7 @@ check_font_families <- function(.data){
 
   #_ stop if there is a font that is not installed
   if(any(.data %>% pull(check_font) == "not found", na.rm = TRUE)) {
-    message(cli_alert_danger(glue("The following fonts are required and not installed on the system: {glue_collapse(.data %>% distinct(font_to_install) %>% pull(font_to_install), sep = ', ')}\nPlease install these fonts with the TO DO function")))
+    message(cli_alert_danger(glue("The following fonts are required and not installed on the system: {glue_collapse(.data %>% distinct(font_to_install) %>% pull(font_to_install), sep = ', ')}\nPlease install these fonts on your system before to try again\nYou can also see sysfonts::font_add() and sysfonts::font_add_google()")))
   }
   
   #_ delete unnecessary cols

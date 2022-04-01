@@ -30,6 +30,15 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
+
+      - name: Install fonts
+        run: |
+          install.packages(c("showtext", "remotes"))
+          install_local(force = TRUE)
+          font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+          font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
+          showtext_auto()
+
       - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-pandoc@v1

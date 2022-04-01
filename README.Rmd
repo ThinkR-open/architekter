@@ -94,7 +94,7 @@ my_awesome_theme <- get_figma_file_content(
 
 - Use the {ggplot2} theme:
 
-```{r message=FALSE}
+```{r message=FALSE, dpi=800}
 library(ggplot2)
 
 ggplot(data = iris) + 
