@@ -41,49 +41,49 @@ create_theme_fun <- function(.data) {
         linetype = .data %>% filter(element_name == "panel_background") %>% pull(linetype)
       ),
       panel.grid.major = element_line(
-        size = .data %>% filter(element_name == "panel_grid") %>% pull(size),
+        size = .data %>% filter(element_name == "panel_grid") %>% pull(size) / 10,
         color = .data %>% filter(element_name == "panel_grid") %>% pull(color),
         linetype = .data %>% filter(element_name == "panel_grid") %>% pull(linetype)
       ),
       panel.grid.minor = element_line(
-        size = .data %>% filter(element_name == "panel_grid") %>% pull(size),
+        size = .data %>% filter(element_name == "panel_grid") %>% pull(size) / 10,
         color = .data %>% filter(element_name == "panel_grid") %>% pull(color),
         linetype = .data %>% filter(element_name == "panel_grid") %>% pull(linetype)
       ),
       plot.title = element_text(
         lineheight = .data %>% filter(element_name == "plot_title") %>% pull(lineheight),
         family = .data %>% filter(element_name == "plot_title") %>% pull(family),
-        size = .data %>% filter(element_name == "plot_title") %>% pull(size),
+        size = .data %>% filter(element_name == "plot_title") %>% pull(size) / 1.5,
         color = .data %>% filter(element_name == "plot_title") %>% pull(color),
       ),
       plot.subtitle = element_text(
         lineheight = .data %>% filter(element_name == "plot_subtitle") %>% pull(lineheight),
         family = .data %>% filter(element_name == "plot_subtitle") %>% pull(family),
-        size = .data %>% filter(element_name == "plot_subtitle") %>% pull(size),
+        size = .data %>% filter(element_name == "plot_subtitle") %>% pull(size) / 1.5,
         color = .data %>% filter(element_name == "plot_subtitle") %>% pull(color),
       ),
       legend.title = element_text(
         lineheight = .data %>% filter(element_name == "legend_title") %>% pull(lineheight),
         family = .data %>% filter(element_name == "legend_title") %>% pull(family),
-        size = .data %>% filter(element_name == "legend_title") %>% pull(size),
+        size = .data %>% filter(element_name == "legend_title") %>% pull(size) / 1.5,
         color = .data %>% filter(element_name == "legend_title") %>% pull(color),
       ),
       legend.text = element_text(
         lineheight = .data %>% filter(element_name == "legend_text") %>% pull(lineheight),
         family = .data %>% filter(element_name == "legend_text") %>% pull(family),
-        size = .data %>% filter(element_name == "legend_text") %>% pull(size),
+        size = .data %>% filter(element_name == "legend_text") %>% pull(size) / 1.5,
         color = .data %>% filter(element_name == "legend_text") %>% pull(color),
       ),
       axis.title = element_text(
         lineheight = .data %>% filter(element_name == "axis_title") %>% pull(lineheight),
         family = .data %>% filter(element_name == "axis_title") %>% pull(family),
-        size = .data %>% filter(element_name == "axis_title") %>% pull(size),
+        size = .data %>% filter(element_name == "axis_title") %>% pull(size) / 1.5,
         color = .data %>% filter(element_name == "axis_title") %>% pull(color),
       ),
       axis.text = element_text(
         lineheight = .data %>% filter(element_name == "axis_text") %>% pull(lineheight),
         family = .data %>% filter(element_name == "axis_text") %>% pull(family),
-        size = .data %>% filter(element_name == "axis_text") %>% pull(size),
+        size = .data %>% filter(element_name == "axis_text") %>% pull(size) / 1.5,
         color = .data %>% filter(element_name == "axis_text") %>% pull(color),
       ),
       ...

@@ -22,7 +22,7 @@ library(architekter)
 
 # Create a theme function in correspondance with the Figma maquette
 
-```{r}
+```{r out.width = '100%'}
 library(ggplot2)
 
 my_awesome_theme <- get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
