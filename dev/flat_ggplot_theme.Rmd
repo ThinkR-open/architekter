@@ -179,6 +179,9 @@ test_that("check_font_families works", {
 
   data(toy_raw_file_content)
 
+  sysfonts::font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+  sysfonts::font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
+  
   result_ggplot_theme <- toy_raw_file_content %>% extract_ggplot_theme()
   
   expect_message(object = result_ggplot_theme %>% check_font_families(),
