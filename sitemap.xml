@@ -16,7 +16,10 @@
     <loc>https://thinkr-open.github.io/fusen/articles/c-design-elements-extraction-from-the-figma-file.html</loc>
   </url>
   <url>
-    <loc>https://thinkr-open.github.io/fusen/articles/d-extract-the-ggplot2-theme-from-a-figma-file.html</loc>
+    <loc>https://thinkr-open.github.io/fusen/articles/d-extract-the-ggplot2-theme-elements-from-a-figma-file.html</loc>
+  </url>
+  <url>
+    <loc>https://thinkr-open.github.io/fusen/articles/e-create-the-ggplot2-theme-function.html</loc>
   </url>
   <url>
     <loc>https://thinkr-open.github.io/fusen/articles/index.html</loc>
@@ -32,6 +35,9 @@
   </url>
   <url>
     <loc>https://thinkr-open.github.io/fusen/reference/add_ggplot_theme_type.html</loc>
+  </url>
+  <url>
+    <loc>https://thinkr-open.github.io/fusen/reference/create_theme_fun.html</loc>
   </url>
   <url>
     <loc>https://thinkr-open.github.io/fusen/reference/determine_ggplot_theme_elements.html</loc>

@@ -4,8 +4,9 @@ pkgdown_sha: ~
 articles:
   b-figma-api-connection-and-file-extraction: b-figma-api-connection-and-file-extraction.html
   c-design-elements-extraction-from-the-figma-file: c-design-elements-extraction-from-the-figma-file.html
-  d-extract-the-ggplot2-theme-from-a-figma-file: d-extract-the-ggplot2-theme-from-a-figma-file.html
-last_built: 2022-03-25T21:05Z
+  d-extract-the-ggplot2-theme-elements-from-a-figma-file: d-extract-the-ggplot2-theme-elements-from-a-figma-file.html
+  e-create-the-ggplot2-theme-function: e-create-the-ggplot2-theme-function.html
+last_built: 2022-04-01T11:24Z
 urls:
   reference: https://thinkr-open.github.io/fusen/reference
   article: https://thinkr-open.github.io/fusen/articles
