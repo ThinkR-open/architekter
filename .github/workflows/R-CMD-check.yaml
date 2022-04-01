@@ -31,14 +31,6 @@ jobs:
       FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
 
-      # - name: Install fonts
-      #   run: |
-      #     install.packages("remotes", repos = "https://cran.rstudio.com/")
-      #     remotes::install_local(force = TRUE)
-      #     sysfonts::font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
-      #     sysfonts::font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
-      #   shell: Rscript {0}
-
     steps:
       - uses: actions/checkout@v2
 
@@ -70,15 +62,19 @@ jobs:
           do
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
+
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-      # - name: Setup tmate session
-      #   if: runner.os == 'Windows'
-      #   uses: mxschmitt/action-tmate@v3
+      - name: Install fonts
+        run: |
+          remotes::install_local(force = TRUE)
+          sysfonts::font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+          sysfonts::font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
+        shell: Rscript {0}
 
       - name: Check
         env:
