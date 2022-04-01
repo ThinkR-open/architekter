@@ -8,6 +8,7 @@
 #' @importFrom dplyr filter distinct pull left_join mutate case_when select
 #' @importFrom cli cli_alert_danger
 #' @importFrom glue glue glue_collapse
+#' @importFrom showtext showtext_auto
 #' 
 #' @return A tibble with the correct font family. And a message if one of the fonts is missing.
 #' 
@@ -20,6 +21,8 @@
 #'   check_font_families()
 check_font_families <- function(.data){
 
+  showtext_auto()
+  
   #_ extract available fonts on the system
   available_fonts <- system_fonts() %>% 
     select(name, family, style) %>% 

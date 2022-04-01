@@ -11,14 +11,17 @@
 #' @return A {ggplot2} theme function.
 #' @export
 #' @examples
+#' library(ggplot2)
+#' library(showtext)
+#' 
 #' data(toy_raw_file_content)
 #' 
-#' library(ggplot2)
+#' font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+#' font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
 #' 
 #' my_theme <- toy_raw_file_content %>% 
 #'   create_theme_fun()
 #' 
-#' \dontrun{
 #' ggplot(data = iris) + 
 #'   aes(x = Sepal.Width, fill = Species) + 
 #'   geom_density() + 
@@ -28,7 +31,6 @@
 #'        y = "Density", 
 #'        color = "Species") +
 #'   my_theme()
-#' }
 create_theme_fun <- function(.data) {
   
   #_ Extract ggplot theme
