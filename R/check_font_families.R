@@ -30,6 +30,8 @@ check_font_families <- function(.data){
     mutate(family = paste(family, style)) %>% 
     select(ps_name, family)
   
+  print(available_fonts %>% filter(stringr::str_detect(family, "Roboto")))
+  
   #_ replace the ps_name with the family
   .data <- .data %>% 
     left_join(available_fonts, 
