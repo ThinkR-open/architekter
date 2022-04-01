@@ -33,9 +33,9 @@ jobs:
 
       - name: Install fonts
         run: |
-          install.packages("remotes")
+          install.packages("remotes", repos = "https://cran.rstudio.com/")
           install_local(force = TRUE)
-          install.packages("showtext")
+          install.packages("showtext", repos = "https://cran.rstudio.com/")
           font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
           font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
           showtext_auto()
