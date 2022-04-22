@@ -76,24 +76,34 @@ Sys.setenv(FIGMA_TOKEN = "your-token-here")
 
 - Restart your R session
 
-- Load `{architekter}`
+- Load `{architekter}`:
 
 ```{r}
 library(architekter)
 ```
 
-- Extract the {ggplot2} theme elements from your Figma file:
+- Extract the {ggplot2} theme from your Figma file:
 
-```{r eval=FALSE}
-get_figma_file_content(file_key = "your-file-key",
-                       acess_token = Sys.getenv("FIGMA_TOKEN")) %>% 
-extract_ggplot_theme()
+```{r message=FALSE}
+my_awesome_theme <- get_figma_file_content(
+  file_key = "wRqIvMmymzSPuj0sEhnORb",
+  acess_token = Sys.getenv("FIGMA_TOKEN")
+  ) %>%
+  create_theme_fun()
 ```
 
-#### Example
+- Use the {ggplot2} theme:
 
-```{r}
-get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
-                       acess_token = Sys.getenv("FIGMA_TOKEN")) %>% 
-extract_ggplot_theme()
+```{r message=FALSE, dpi=800}
+library(ggplot2)
+
+ggplot(data = iris) + 
+  aes(x = Sepal.Width, fill = Species) + 
+  geom_density() + 
+  labs(title = "Sepal width of several species of iris",
+       subtitle = "This plot respects the graphic design system defined in Figma",
+       x = "Sepal width",
+       y = "Density", 
+       color = "Iris species") +
+  my_awesome_theme()
 ```

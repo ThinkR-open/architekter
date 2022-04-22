@@ -22,16 +22,16 @@ library(architekter)
 
 # Create a theme function in correspondance with the Figma maquette
 
-```{r out.width = '100%'}
+```{r out.width = '100%', dpi = 800}
 library(ggplot2)
 
-my_awesome_theme <- get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
-                                  acess_token = Sys.getenv("FIGMA_TOKEN")) %>%
-  extract_ggplot_theme() %>% 
+my_awesome_theme <- get_figma_file_content(
+  file_key = "wRqIvMmymzSPuj0sEhnORb",
+  acess_token = Sys.getenv("FIGMA_TOKEN")
+  ) %>%
   create_theme_fun()
 
 # Toy plot 1
-#' \dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Width, fill = Species) + 
   geom_density() + 
@@ -41,10 +41,8 @@ ggplot(data = iris) +
        y = "Density", 
        color = "Iris species") +
   my_awesome_theme()
-#' }
 
 # Toy plot 2
-#' \dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Width, fill = Species) + 
   geom_density() + 
@@ -54,10 +52,8 @@ ggplot(data = iris) +
        y = "Density", 
        color = "Iris species") +
   my_awesome_theme(legend.position = "bottom")
-#' }
 
 # Toy plot 3
-#' \dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Length, y = Sepal.Width, color = Species) + 
   geom_point() + 
@@ -67,10 +63,8 @@ ggplot(data = iris) +
        y = "Sepal width", 
        color = "Iris species") +
   my_awesome_theme()
-#' }
 
 # Toy plot 4
-#' \dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Length, y = Sepal.Width) + 
   geom_point() + 
@@ -80,23 +74,62 @@ ggplot(data = iris) +
        y = "Sepal width") +
   facet_grid(cols = vars(Species)) +
   my_awesome_theme()
-#' }
+```
+
+### In case your theme uses specific fonts
+
+The `create_theme_fun()` function will warn you if the fonts needed for theme are not installed on your system.
+
+You will be able to install them manually on your system. Or you can use the `{showtext}` package: https://github.com/yixuan/showtext.
+
+
+```{r eval = FALSE}
+library(showtext)
+
+# Install a Google font cf https://fonts.google.com/
+font_add_google(name = "Roboto", family = "Roboto")
+
+# Install a font from a file
+font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
+
+# Use showtext to render text
+showtext_auto()
 ```
 
 # Details of the functions
 
+## Determine if the required font families are present on the system
+
+  
+
+```{r example-check_font_families}
+data(toy_raw_file_content)
+
+toy_raw_file_content %>% 
+  extract_ggplot_theme() %>% 
+  check_font_families()
+```
+
+  
+
+  
+
+
 ## Create a theme function by using the {ggplot2} elements extracted from the Figma file
 
 ```{r examples-create_theme_fun}
+library(ggplot2)
+library(showtext)
+
 data(toy_raw_file_content)
 
-library(ggplot2)
+font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
 
 my_theme <- toy_raw_file_content %>% 
-  extract_ggplot_theme() %>% 
   create_theme_fun()
 
-#' \dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Width, fill = Species) + 
   geom_density() + 
@@ -106,6 +139,5 @@ ggplot(data = iris) +
        y = "Density", 
        color = "Species") +
   my_theme()
-#' }
 ```
 

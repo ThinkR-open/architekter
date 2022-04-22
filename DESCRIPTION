@@ -1,5 +1,5 @@
 Package: architekter
-Title: Build A {ggplot} Maquette From Figma File
+Title: Build a {ggplot} Maquette from Figma File
 Version: 0.0.0.9000
 Authors@R: c(
     person("Margot", "Brard", , "margot@thinkr.fr", role = c("aut", "cre"),
@@ -22,7 +22,10 @@ Imports:
     magrittr,
     purrr,
     readr,
+    showtext,
     stringr,
+    sysfonts,
+    systemfonts,
     tibble,
     tidyr
 Suggests: 

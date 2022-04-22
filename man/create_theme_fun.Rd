@@ -7,7 +7,7 @@
 create_theme_fun(.data)
 }
 \arguments{
-\item{.data}{Tibble. {ggplot2} elements as created by \code{architekter::\link{extract_ggplot_theme}()}}
+\item{.data}{Tibble. {ggplot2} elements as created by \code{architekter::\link{get_figma_file_content}()}}
 }
 \value{
 A {ggplot2} theme function.
@@ -16,15 +16,17 @@ A {ggplot2} theme function.
 Create a theme functions by using the {ggplot2} elements extracted from the Figma file
 }
 \examples{
+library(ggplot2)
+library(showtext)
+
 data(toy_raw_file_content)
 
-library(ggplot2)
+font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
 
 my_theme <- toy_raw_file_content \%>\% 
-  extract_ggplot_theme() \%>\% 
   create_theme_fun()
 
-\dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Width, fill = Species) + 
   geom_density() + 
@@ -34,5 +36,4 @@ ggplot(data = iris) +
        y = "Density", 
        color = "Species") +
   my_theme()
-}
 }

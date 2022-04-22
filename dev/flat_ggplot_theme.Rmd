@@ -20,16 +20,16 @@ pkgload::load_all(export_all = FALSE)
 
 # Create a theme function in correspondance with the Figma maquette
 
-```{r out.width='100%'}
+```{r out.width='100%', dpi=800}
 library(ggplot2)
 
-my_awesome_theme <- get_figma_file_content(file_key = "wRqIvMmymzSPuj0sEhnORb",
-                                  acess_token = Sys.getenv("FIGMA_TOKEN")) %>%
-  extract_ggplot_theme() %>% 
+my_awesome_theme <- get_figma_file_content(
+  file_key = "wRqIvMmymzSPuj0sEhnORb",
+  acess_token = Sys.getenv("FIGMA_TOKEN")
+  ) %>%
   create_theme_fun()
 
 # Toy plot 1
-#' \dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Width, fill = Species) + 
   geom_density() + 
@@ -39,10 +39,8 @@ ggplot(data = iris) +
        y = "Density", 
        color = "Iris species") +
   my_awesome_theme()
-#' }
 
 # Toy plot 2
-#' \dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Width, fill = Species) + 
   geom_density() + 
@@ -52,10 +50,8 @@ ggplot(data = iris) +
        y = "Density", 
        color = "Iris species") +
   my_awesome_theme(legend.position = "bottom")
-#' }
 
 # Toy plot 3
-#' \dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Length, y = Sepal.Width, color = Species) + 
   geom_point() + 
@@ -65,10 +61,8 @@ ggplot(data = iris) +
        y = "Sepal width", 
        color = "Iris species") +
   my_awesome_theme()
-#' }
 
 # Toy plot 4
-#' \dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Length, y = Sepal.Width) + 
   geom_point() + 
@@ -78,17 +72,135 @@ ggplot(data = iris) +
        y = "Sepal width") +
   facet_grid(cols = vars(Species)) +
   my_awesome_theme()
-#' }
+```
+
+### In case your theme uses specific fonts
+
+The `create_theme_fun()` function will warn you if the fonts needed for theme are not installed on your system.
+
+You will be able to install them manually on your system. Or you can use the `{showtext}` package: https://github.com/yixuan/showtext.
+
+```{r eval=FALSE}
+library(showtext)
+
+# Install a Google font cf https://fonts.google.com/
+font_add_google(name = "Roboto", family = "Roboto")
+
+# Install a font from a file
+font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
+
+# Use showtext to render text
+showtext_auto()
 ```
 
 # Details of the functions
+
+## Determine if the required font families are present on the system
+
+```{r function-check_font_families}
+#' Determine if the required font families are present on the system
+#' 
+#' @param .data Tibble. {ggplot2} elements as created by \code{architekter::\link{extract_ggplot_theme}()}
+#' 
+#' @importFrom systemfonts system_fonts
+#' @importFrom dplyr filter distinct pull left_join mutate case_when select
+#' @importFrom cli cli_alert_danger
+#' @importFrom glue glue glue_collapse
+#' @importFrom showtext showtext_auto
+#' 
+#' @return A tibble with the correct font family. And a message if one of the fonts is missing.
+#' 
+#' @export
+check_font_families <- function(.data){
+
+  showtext_auto()
+  
+  #_ extract available fonts on the system
+  available_fonts <- system_fonts() %>% 
+    select(name, family, style) %>% 
+    rename(ps_name = name) %>% 
+    mutate(family = paste(family, style)) %>% 
+    select(ps_name, family)
+  
+  print(available_fonts %>% filter(stringr::str_detect(family, "Roboto")))
+  
+  #_ replace the ps_name with the family
+  .data <- .data %>% 
+    left_join(available_fonts, 
+              by = c("font_ps_name" = "ps_name")) %>% 
+    mutate(family = case_when(
+      !is.na(font_ps_name) ~ family,
+      !is.na(font_family) ~ font_family, 
+      TRUE ~ family
+      )
+    )
+  
+  #_ check if needed fonts have been found
+  .data <- .data %>% 
+    mutate(
+      check_font = case_when(
+        is.na(font_family) & is.na(font_ps_name) ~ NA_character_,
+        !is.na(font_family) & !is.na(family) ~ "found",
+        !is.na(font_ps_name) & !is.na(family) ~ "found",
+        TRUE ~ "not found"
+        )) %>% 
+    mutate(
+      font_to_install = case_when(
+        check_font == "not found" & !is.na(font_ps_name) ~ font_ps_name,
+        check_font == "not found" & !is.na(font_family) ~ font_family,
+        TRUE ~ NA_character_
+      )
+    ) %>% 
+    select(-font_family, -font_ps_name)
+
+  print(.data %>% select(family, check_font, font_to_install))
+  
+  #_ stop if there is a font that is not installed
+  if(any(.data %>% pull(check_font) == "not found", na.rm = TRUE)) {
+    message(cli_alert_danger(glue("The following fonts are required and not installed on the system: {glue_collapse(.data %>% distinct(font_to_install) %>% pull(font_to_install), sep = ', ')}\nPlease install these fonts on your system before to try again\nYou can see ?sysfonts::font_add() and ?sysfonts::font_add_google()")))
+  }
+  
+  #_ delete unnecessary cols
+  .data <- .data %>% 
+    select(-check_font, -font_to_install)
+    
+  return(.data)
+  
+}
+```
+  
+```{r example-check_font_families}
+data(toy_raw_file_content)
+
+toy_raw_file_content %>% 
+  extract_ggplot_theme() %>% 
+  check_font_families()
+```
+  
+```{r tests-check_font_families}
+test_that("check_font_families works", {
+
+  data(toy_raw_file_content)
+
+  sysfonts::font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+  sysfonts::font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
+  
+  result_ggplot_theme <- toy_raw_file_content %>% extract_ggplot_theme()
+  
+  expect_message(object = result_ggplot_theme %>% check_font_families(),
+                 regexp = NA)
+  
+  })
+```
+  
 
 ## Create a theme function by using the {ggplot2} elements extracted from the Figma file
 
 ```{r function-create_theme_fun}
 #' Create a theme functions by using the {ggplot2} elements extracted from the Figma file
 #'
-#' @param .data Tibble. {ggplot2} elements as created by \code{architekter::\link{extract_ggplot_theme}()}
+#' @param .data Tibble. {ggplot2} elements as created by \code{architekter::\link{get_figma_file_content}()}
 #' 
 #' @importFrom ggplot2 theme element_rect element_line element_text
 #' @importFrom dplyr filter pull
@@ -98,6 +210,15 @@ ggplot(data = iris) +
 #' @export
 create_theme_fun <- function(.data) {
   
+  #_ Extract ggplot theme
+  .data <- .data %>% 
+    extract_ggplot_theme()
+    
+  #_ Check fonts
+  .data <- .data %>% 
+    check_font_families()
+  
+  #_ Create the theme function
   ad_hoc_theme_fun <- function(...) {
     theme(
       panel.background = element_rect(
@@ -163,15 +284,17 @@ create_theme_fun <- function(.data) {
 ```
 
 ```{r examples-create_theme_fun}
+library(ggplot2)
+library(showtext)
+
 data(toy_raw_file_content)
 
-library(ggplot2)
+font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
+font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
 
 my_theme <- toy_raw_file_content %>% 
-  extract_ggplot_theme() %>% 
   create_theme_fun()
 
-#' \dontrun{
 ggplot(data = iris) + 
   aes(x = Sepal.Width, fill = Species) + 
   geom_density() + 
@@ -181,7 +304,6 @@ ggplot(data = iris) +
        y = "Density", 
        color = "Species") +
   my_theme()
-#' }
 ```
 
 ```{r tests-create_theme_fun}
@@ -190,7 +312,6 @@ test_that("create_theme_fun works", {
   data(toy_raw_file_content)
 
   my_theme <- toy_raw_file_content %>% 
-    extract_ggplot_theme() %>% 
     create_theme_fun()
   
   expect_true(inherits(my_theme, "function"))
