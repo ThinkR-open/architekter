@@ -75,6 +75,7 @@ jobs:
           remotes::install_local(upgrade = "never")
           sysfonts::font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
           sysfonts::font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
+          print(system_fonts() %>% select(name, family, style) %>% filter(stringr::str_detect(family, "Roboto")))
         shell: Rscript {0}
 
       - name: Check
