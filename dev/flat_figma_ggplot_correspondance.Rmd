@@ -104,32 +104,31 @@ test_that("add_ggplot_theme_type works", {
   # long dput ----
   expect_equal(object = data_with_type, 
                expected = structure(list(element_name = c("panel_background", "legend_text", 
-                                                          "legend_title", "panel_grid", "axis_text", "axis_title", "plot_subtitle", 
-                                                          "plot_title"), element_type = c("rect", "text", "text", "line", 
-                                                                                          "text", "text", "text", "text"), strokeWeight = c(5, 1, 1, 1, 
-                                                                                                                                            1, 1, 1, 1), fontFamily = c(NA, "Roboto", "Roboto", NA, "Roboto", 
-                                                                                                                                                                        "Roboto", "Roboto", "Roboto"), fontPostScriptName = c(NA, NA, 
-                                                                                                                                                                                                                              NA, NA, NA, NA, "Roboto-Light", "Roboto-Light"), fontWeight = c(NA, 
-                                                                                                                                                                                                                                                                                              400L, 400L, NA, 400L, 400L, 300L, 300L), textAutoResize = c(NA, 
-                                                                                                                                                                                                                                                                                                                                                          "HEIGHT", "HEIGHT", NA, NA, NA, "HEIGHT", "WIDTH_AND_HEIGHT"), 
-                                         fontSize = c(NA, 9, 11, NA, 9, 11, 12, 20), textAlignHorizontal = c(NA, 
-                                                                                                             "LEFT", "LEFT", NA, "LEFT", "LEFT", "LEFT", "LEFT"), textAlignVertical = c(NA, 
-                                                                                                                                                                                        "TOP", "TOP", NA, "TOP", "TOP", "TOP", "BOTTOM"), letterSpacing = c(NA, 
-                                                                                                                                                                                                                                                            0.36, 0.44, NA, 0, 0.44, 0.48, 0.8), lineHeightPx = c(NA, 
-                                                                                                                                                                                                                                                                                                                  10.546875, 12.890625, NA, 10.546875, 12.890625, 14.0625, 
-                                                                                                                                                                                                                                                                                                                  23.4375), lineHeightPercent = c(NA, 100, 100, NA, 100, 100, 
-                                                                                                                                                                                                                                                                                                                                                  100, 100), lineHeightUnit = c(NA, "INTRINSIC_%", "INTRINSIC_%", 
-                                                                                                                                                                                                                                                                                                                                                                                NA, "INTRINSIC_%", "INTRINSIC_%", "INTRINSIC_%", "INTRINSIC_%"
-                                                                                                                                                                                                                                                                                                                                                  ), fills_blendMode = c("NORMAL", "NORMAL", "NORMAL", "NORMAL", 
-                                                                                                                                                                                                                                                                                                                                                                         "NORMAL", "NORMAL", "NORMAL", "NORMAL"), fills_type = c("SOLID", 
-                                                                                                                                                                                                                                                                                                                                                                                                                                 "SOLID", "SOLID", "SOLID", "SOLID", "SOLID", "SOLID", "SOLID"
-                                                                                                                                                                                                                                                                                                                                                                         ), fills_color = c("#5FBDDEFF", "#000000FF", "#000000FF", 
-                                                                                                                                                                                                                                                                                                                                                                                            "#5FBDDEFF", "#B0B0B0FF", "#000000FF", "#000000FF", "#FDA6E3FF"
-                                                                                                                                                                                                                                                                                                                                                                         ), strokes_blendMode = c("NORMAL", NA, NA, NA, NA, NA, NA, 
-                                                                                                                                                                                                                                                                                                                                                                                                  NA), strokes_type = c("SOLID", NA, NA, NA, NA, NA, NA, NA
-                                                                                                                                                                                                                                                                                                                                                                                                  ), strokes_color = c("#000000FF", NA, NA, NA, NA, NA, NA, 
-                                                                                                                                                                                                                                                                                                                                                                                                                       NA), strokeDashes = c(TRUE, NA, NA, NA, NA, NA, NA, NA)), row.names = c(NA, 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               -8L), class = c("tbl_df", "tbl", "data.frame")))
+"legend_title", "panel_grid", "axis_text", "axis_title", "plot_subtitle", 
+"plot_title"), element_type = c("rect", "text", "text", "line", 
+"text", "text", "text", "text"), strokeWeight = c(5, 1, 1, 1, 
+1, 1, 1, 1), fontFamily = c(NA, "Roboto", "Roboto", NA, "Roboto", 
+"Roboto", "Roboto", "Roboto"), fontWeight = c(NA, 400L, 400L, 
+NA, 400L, 400L, 300L, 300L), textAutoResize = c(NA, "HEIGHT", 
+"HEIGHT", NA, NA, NA, "HEIGHT", "WIDTH_AND_HEIGHT"), fontSize = c(NA, 
+9, 11, NA, 9, 11, 12, 20), textAlignHorizontal = c(NA, "LEFT", 
+"LEFT", NA, "LEFT", "LEFT", "LEFT", "LEFT"), textAlignVertical = c(NA, 
+"TOP", "TOP", NA, "TOP", "TOP", "TOP", "BOTTOM"), letterSpacing = c(NA, 
+0.36, 0.44, NA, 0, 0.44, 0.48, 0.8), lineHeightPx = c(NA, 10.546875, 
+12.890625, NA, 10.546875, 12.890625, 14.0625, 23.4375), lineHeightPercent = c(NA, 
+100, 100, NA, 100, 100, 100, 100), lineHeightUnit = c(NA, "INTRINSIC_%", 
+"INTRINSIC_%", NA, "INTRINSIC_%", "INTRINSIC_%", "INTRINSIC_%", 
+"INTRINSIC_%"), fontPostScriptName = c(NA, NA, NA, NA, NA, NA, 
+"Roboto-Light", "Roboto-Light"), fills_blendMode = c("NORMAL", 
+"NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL"
+), fills_type = c("SOLID", "SOLID", "SOLID", "SOLID", "SOLID", 
+"SOLID", "SOLID", "SOLID"), fills_color = c("#5FBDDEFF", "#000000FF", 
+"#000000FF", "#5FBDDEFF", "#B0B0B0FF", "#000000FF", "#000000FF", 
+"#FDA6E3FF"), strokes_blendMode = c("NORMAL", NA, NA, NA, NA, 
+NA, NA, NA), strokes_type = c("SOLID", NA, NA, NA, NA, NA, NA, 
+NA), strokes_color = c("#000000FF", NA, NA, NA, NA, NA, NA, NA
+), strokeDashes = c(TRUE, NA, NA, NA, NA, NA, NA, NA)), row.names = c(NA, 
+-8L), class = c("tbl_df", "tbl", "data.frame")))
   # end of long dput ----
   
   data_with_error_type <- toy_raw_file_content %>% 

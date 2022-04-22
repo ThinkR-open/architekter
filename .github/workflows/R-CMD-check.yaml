@@ -71,7 +71,8 @@ jobs:
 
       - name: Install fonts
         run: |
-          remotes::install_local(force = TRUE)
+          remotes::install_github("ThinkR-open/architekter", upgrade = "never")
+          remotes::install_local(upgrade = "never")
           sysfonts::font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
           sysfonts::font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
         shell: Rscript {0}
