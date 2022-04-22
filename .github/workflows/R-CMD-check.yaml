@@ -76,7 +76,7 @@ jobs:
           remotes::install_cran(c("sysfonts", "systemfonts"))
           sysfonts::font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
           sysfonts::font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
-          print(systemfonts::system_fonts()[grepl("Roboto", system_fonts()$family), c("name", "family", "style")])
+          print(systemfonts::system_fonts()[grepl("Roboto", systemfonts::system_fonts()$family), c("name", "family", "style")])
         shell: Rscript {0}
 
       - name: Check
