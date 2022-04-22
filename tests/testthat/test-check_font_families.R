@@ -6,10 +6,12 @@ test_that("check_font_families works", {
 
   sysfonts::font_add(family = "Roboto", system.file("fonts", "Roboto.ttf", package = "architekter"))
   sysfonts::font_add(family = "Roboto Light", system.file("fonts", "RobotoLight.ttf", package = "architekter"))
-  
+
   result_ggplot_theme <- toy_raw_file_content %>% extract_ggplot_theme()
-  
+
+  result_ggplot_theme %>% check_font_families()
+
   expect_message(object = result_ggplot_theme %>% check_font_families(),
                  regexp = NA)
-  
+
   })
